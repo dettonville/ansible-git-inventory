@@ -1,0 +1,42 @@
+---
+
+test_description: "Add groups to hierarchical groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: true
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: admin_qa_site1
+    group_vars:
+      infra_group: DCC
+    parent_groups:
+      location_site1:
+        nfs_server: {}
+        ntp_server: {}
+        ldap_server: {}
+      vmware_flavor_large: {}
+  - group_name: webapp01_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      location_site1:
+        ntp_client: {}
+        nfs_client: {}
+        ldap_client: {}
+        web_server: {}
+      vmware_flavor_small: {}
+  - group_name: webapp02_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      location_site1:
+        ntp_client: {}
+        nfs_client: {}
+        ldap_client: {}
+        web_server: {}
+      vmware_flavor_small: {}

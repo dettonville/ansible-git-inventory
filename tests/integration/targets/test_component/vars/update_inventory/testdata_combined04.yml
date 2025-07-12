@@ -1,0 +1,19 @@
+---
+
+test_description: "Remove groups and hosts"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+state: absent
+use_vars_files: false
+always_add_child_group_to_root: true
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+host_list:
+  - host_name: admin01.qa.site1.example.int
+  - host_name: web01.qa.site1.example.int
+  - host_name: web02.qa.site1.example.int

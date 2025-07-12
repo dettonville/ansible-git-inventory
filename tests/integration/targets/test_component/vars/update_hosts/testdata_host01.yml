@@ -1,0 +1,32 @@
+---
+
+test_description: "Add hosts"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+
+validate_yaml_content: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: vmlnx123.qa.site1.example.int
+    host_vars:
+      provisioning_data:
+        infra_group: INFRA
+    parent_groups:
+      - vmware_flavor_medium
+      - ntp_client
+      - ldap_client
+  ## the original/ambiguous subkey 'groups' is still supported
+  - host_name: vmlnx124.qa.site1.example.int
+    host_vars:
+      provisioning_data:
+        infra_group: INFRA
+    groups:
+      - vmware_flavor_medium
+      - ntp_client
+      - nfs_client
+      - ldap_client

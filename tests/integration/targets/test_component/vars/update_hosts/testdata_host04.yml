@@ -1,0 +1,16 @@
+---
+
+test_description: "Remove Hosts"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+state: absent
+use_vars_files: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: admin01.qa.site1.example.int
+  - host_name: web01.qa.site1.example.int
+  - host_name: web02.qa.site1.example.int

@@ -1,0 +1,24 @@
+---
+
+test_description: "Set git comment body"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: true
+#logging_level: DEBUG
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+git_comment_body: "Test setting the git_comment_body"
+
+group_list:
+  - group_name: admin_qa_site1
+    group_vars:
+      infra_group: DCC
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server

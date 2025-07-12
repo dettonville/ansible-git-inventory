@@ -1,0 +1,37 @@
+---
+
+test_description: "Add groups to global groups file"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+#logging_level: DEBUG
+
+enforce_global_groups_must_already_exist: true
+global_groups_file: "xenv_groups.yml"
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+test_start_data:
+  - file_path: xenv_groups.yml
+    content:
+      all:
+        children:
+          ansible_localhost:
+            children:
+              ansible_controller_iam: {}
+              ansible_localhost_iam: {}
+          app_abc123:
+            children:
+              app_abc123_dev: {}
+              app_abc123_prod: {}
+              app_abc123_qa: {}
+              app_abc123_sandbox: {}
+
+group_list:
+  - group_name: app_abc123_web_qa
+    parent_groups:
+      - app_abc123_qa
+  - group_name: app_abc123_db_prod
+    parent_groups:
+      - app_abc123_prod

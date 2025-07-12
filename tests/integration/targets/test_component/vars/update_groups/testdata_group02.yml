@@ -1,0 +1,19 @@
+---
+
+test_description: "Update groups"
+jira_id: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: yes
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+    group_vars:
+      site: site1
+    network_internal:
+      vars:
+        trace_var: group_vars/network_internal

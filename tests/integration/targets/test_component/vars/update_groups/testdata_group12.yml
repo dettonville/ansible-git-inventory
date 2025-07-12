@@ -1,0 +1,65 @@
+---
+
+test_description: "Add and update groups with vars in group_vars files"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+always_add_child_group_to_root: true
+
+test_start_data:
+  - file_path: group_vars/test123.yml
+    content:
+      appname: test123
+      site: site1
+      env: prod
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+    group_vars:
+      site: site1
+  - group_name: ocp_common
+    group_vars:
+      ocp_namespace_configuration:
+        - name1
+        - name2
+  - group_name: ocp_dev_s1
+    group_vars:
+      ocp_environment: dev
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_qa_s1
+    group_vars:
+      ocp_environment: qa
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_prod_s1
+    group_vars:
+      ocp_environment: prod
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+
+  - group_name: ocp_dev_s4
+    group_vars:
+      ocp_environment: dev
+      ocp_site: s4
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_qa_s4
+    group_vars:
+      ocp_environment: qa
+      ocp_site: s4
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_prod_s4
+    group_vars:
+      ocp_environment: prod
+      ocp_site: s4
+    parent_groups:
+      - ocp_common

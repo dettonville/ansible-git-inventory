@@ -1,0 +1,24 @@
+---
+
+test_description: "Add groups with complex dict vars (e.g., dict of list of dicts)"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: yes
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: ocp_common
+    group_vars:
+      site: site1
+      ocp_namespace_configuration:
+        - name: name1
+          value: 'something else'
+        - name: name2
+          value: raboof
+  - group_name: location_site1
+    group_vars:
+      site: site1
