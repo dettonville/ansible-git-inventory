@@ -1,5 +1,6 @@
 
 [![ansible-test sanity](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-sanity.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-sanity.yml)
+[![ansible-test units](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-units.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-units.yml)
 [![ansible-lint](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-lint.yml)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 
