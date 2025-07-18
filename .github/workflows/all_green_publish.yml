@@ -38,13 +38,14 @@ jobs:
     needs:
       - lint
       - sanity
-#      - units
+      - units
     runs-on: ubuntu-latest
     steps:
       - run: >-
           python -c "assert set([
           '${{ needs.lint.result }}',
-          '${{ needs.sanity.result }}'
+          '${{ needs.sanity.result }}',
+          '${{ needs.units.result }}'
           ]) == {'success'}"
 
       - name: Checkout repository
