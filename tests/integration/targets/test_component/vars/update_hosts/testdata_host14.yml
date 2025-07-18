@@ -1,0 +1,24 @@
+---
+
+test_description: "Add hosts to hierarchical groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: vmlnx123.qa.site1.example.int
+    parent_groups:
+      location_site1:
+        nfs_server: {}
+        ntp_client: {}
+        ldap_client: {}
+  - host_name: vmlnx124.qa.site1.example.int
+    parent_groups:
+      location_site1:
+        nfs_client: {}
+        ntp_client: {}
+        ldap_client: {}

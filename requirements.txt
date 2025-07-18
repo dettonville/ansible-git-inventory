@@ -1,0 +1,7 @@
+pytest
+PyYAML
+ruamel.yaml
+Jinja2
+setuptools
+jsonschema
+logging

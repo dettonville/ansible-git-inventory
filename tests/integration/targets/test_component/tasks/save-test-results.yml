@@ -1,0 +1,225 @@
+---
+
+- name: "{{ __test_component__log_save_test_results }} Pull latest repo changes into {{ __test_component__test_base_dir }}"
+#  when: __test_component__git_test_results_enabled|bool
+  dettonville.utils.git_pacp:
+    action: pull
+    url: "{{ __test_component__git_repo_url }}"
+    path: "{{ __test_component__test_base_dir }}"
+    branch: "{{ __test_component__git_repo_branch }}"
+    ssh_params: "{{ __test_component__git_ssh_params }}"
+  register: __test_component__git_pull_result
+
+- name: "{{ __test_component__log_save_test_results }} Reset test results dir {{ 
+    __test_component__test_file_results_dir }}"
+  ansible.builtin.file:
+    path: "{{ __test_component__test_base_dir }}/{{ __test_component__test_file_results_dir }}"
+    state: absent
+
+- name: "{{ __test_component__log_save_test_results }} Ensure {{ __test_component__test_file_results_dir }} exists"
+  ansible.builtin.file:
+    path: "{{ __test_component__test_base_dir }}/{{ __test_component__test_file_results_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: "{{ __test_component__log_save_test_results }} Save test case test data to {{ 
+    __test_component__test_file_results_dir }}/{{ __test_component__test_file_test_data }}"
+  ansible.builtin.copy:
+    content: "{{ {'test_data': __test_data} | to_nice_yaml(indent=2) }}"
+    dest: "{{ __test_component__test_base_dir }}/{{ 
+      __test_component__test_file_results_dir }}/{{ __test_component__test_file_test_data }}"
+    mode: "0644"
+
+- name: "{{ __test_component__log_reset }} Display __test_component__test_file_results_dir"
+  ansible.builtin.debug:
+    var: __test_component__test_file_results_dir
+
+#- name: "{{ __test_component__log_save_test_results }} Save post test results to {{
+#    __test_component__test_file_results_dir }}/{{ __test_component__test_file_results }}"
+#  when: __test_component__vars.test_result_output_file|d(False)|bool
+#  ansible.builtin.copy:
+#    src: "{{ __test_component__test_base_dir }}/{{ __test_component__test_file_path }}"
+#    dest: "{{ __test_component__test_base_dir }}/{{
+#      __test_component__test_file_results_dir }}/{{ __test_component__test_file_results }}"
+#    mode: "0644"
+#  no_log: true
+
+- name: "{{ __test_component__log_save_test_results }} Save test results data from slurped results"
+  when: not __test_data.test_expected.failed|d(False)
+  block:
+
+    - name: "{{ __test_component__log_save_test_results }} Set __test_run_path"
+      ansible.builtin.set_fact:
+        __test_run_path: "{{__test_component__test_base_dir }}/{{ __test_component__run_dir }}/"
+
+    - name: "{{ __test_component__log_save_test_results }} Find test results data"
+      no_log: true
+      ansible.builtin.find:
+        paths: "{{ __test_run_path }}"
+        file_type: file
+        patterns: '.*'
+        recurse: true
+        follow: true
+        use_regex: true
+      register: __test_component__test_results_files
+
+    - name: "{{ __test_component__log_save_test_results }} Set __test_component__test_results_file_paths"
+      no_log: true
+      ansible.builtin.set_fact:
+        __test_component__test_results_file_paths: "{{ 
+          __test_component__test_results_files.files | map(attribute='path') | list | sort }}"
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_component__test_results_file_paths"
+      ansible.builtin.debug:
+        var: __test_component__test_results_file_paths
+
+    - name: "{{ __test_component__log_save_test_results }} Slurp result file contents"
+      no_log: true
+      ansible.builtin.slurp:
+        src: '{{ item }}'
+      register: __test_component__test_results_file_contents
+      loop: "{{ __test_component__test_results_file_paths }}"
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_component__test_results_file_contents.results|d([])"
+      ansible.builtin.debug:
+        var: __test_component__test_results_file_contents.results|d([])
+        verbosity: 1
+
+    - name: "{{ __test_component__log_save_test_results }} Init __test_component__test_results_file_contents_by_path"
+      no_log: true
+      ansible.builtin.set_fact:
+        __test_component__test_results_file_contents_by_path: {}
+
+    - name: "{{ __test_component__log_save_test_results }} Set __test_component__test_results_file_contents_by_path"
+      no_log: true
+      ansible.builtin.set_fact:
+        __test_component__test_results_file_contents_by_path: "{{ 
+          __test_component__test_results_file_contents_by_path|d({}) 
+          | combine({ (item.source|replace(__test_run_path, '')): item }) }}"
+      loop: "{{ __test_component__test_results_file_contents.results | d([]) }}"
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_component__test_results_file_contents_by_path"
+      ansible.builtin.debug:
+        var: __test_component__test_results_file_contents_by_path
+  #      verbosity: 1
+
+    - name: "{{ __test_component__log_save_test_results }} Find test result links"
+      no_log: true
+      ansible.builtin.find:
+        paths: "{{ __test_run_path }}"
+        file_type: link
+        patterns: '.*\.yml'
+        recurse: true
+        follow: true
+        use_regex: true
+      register: __test_component__test_result_links
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_component__test_result_links"
+      ansible.builtin.debug:
+        var: __test_component__test_result_links.files|d([])
+        verbosity: 2
+
+    - name: "{{ __test_component__log_save_test_results }} Set __test_run_path_regex"
+      ansible.builtin.set_fact:
+        __test_run_path_regex: "^{{ __test_run_path }}"
+
+    - name: "{{ __test_component__log_save_test_results }} Init __test_component__test_results_link_paths"
+      no_log: true
+      ansible.builtin.set_fact:
+        __test_component__test_results_link_paths: {}
+
+    - name: "{{ __test_component__log_save_test_results }} Set __test_component__test_results_link_paths"
+      no_log: true
+      ansible.builtin.set_fact:
+        __test_component__test_results_link_paths: "{{ 
+          __test_component__test_result_links.files | d([]) | map(attribute='path') | list 
+          | map('regex_replace', __test_run_path_regex, '') | list | sort | list }}"
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_component__test_results_link_paths"
+      ansible.builtin.debug:
+        var: __test_component__test_results_link_paths
+
+    - name: "{{ __test_component__log_save_test_results }} Display __test_data.validate_yaml_content"
+      ansible.builtin.debug:
+        var: __test_data.validate_yaml_content|d(True)
+
+    - name: "{{ __test_component__log_save_test_results }} Save actual test results to {{ 
+        __test_component__test_file_results_dir }}/{{ __test_component__test_file_results }}"
+      ansible.builtin.template:
+        src: "test_actual_results.yml.j2"
+        dest: "{{ __test_component__test_base_dir }}/{{ 
+          __test_component__test_file_results_dir }}/{{ __test_component__test_file_results }}"
+        mode: "0644"
+
+- name: "{{ __test_component__log_save_test_results }} Set expected results template vars"
+  ansible.builtin.set_fact:
+    __expected_results_template: "{{ 
+      __test_component__test_case_dir }}/test_{{ __test_case_id }}.{{ __test_component__test_file_expected }}.j2"
+    __expected_results_file: "{{ __test_data.inventory_file | d(__test_component__test_file) }}"
+    __expected_results_dir: "{{ __test_component__results_dir }}"
+
+- name: "{{ __test_component__log_save_test_results 
+    }} If _test_data.inventory_dir defined, override __expected_results_dir"
+  when: __test_data.inventory_dir is defined
+  ansible.builtin.set_fact:
+    __expected_results_dir: "{{ __test_component__inventory_root_dir }}"
+
+- name: "{{ __test_component__log_save_test_results }} Display __test_data.expected_links"
+  ansible.builtin.debug:
+    var: __test_data.expected_links|d([])
+
+- name: "{{ __test_component__log_save_test_results }} Display expected results template vars"
+  ansible.builtin.debug:
+    msg:
+      - "__test_component__inventory_root_dir: {{ __test_component__inventory_root_dir }}"
+      - "__test_data.validate_yaml_content: {{ __test_data.validate_yaml_content | d(True) }}"
+      - "__expected_results_template: {{ __expected_results_template }}"
+      - "__expected_results_file: {{ __expected_results_file }}"
+      - "__expected_results_dir: {{ __expected_results_dir }}"
+
+- name: "{{ __test_component__log_save_test_results }} Display __test_data.test_start_data|d([])"
+  ansible.builtin.debug:
+    var: __test_data.test_start_data|d([])
+
+- name: "{{ __test_component__log_save_test_results }} Save expected test results to {{ 
+    __test_component__test_file_results_dir }}/{{ __test_component__test_file_expected }}"
+  when: not __test_data.test_expected.failed|d(False)|bool
+#  no_log: true
+  ansible.builtin.template:
+    src: "test_expected_results.yml.j2"
+    dest: "{{ __test_component__test_base_dir }}/{{ 
+      __test_component__test_file_results_dir }}/{{ __test_component__test_file_expected }}"
+    mode: "0644"
+
+- name: "{{ __test_component__log_save_test_results }} Save use case example to {{ 
+    __test_component__test_file_results_dir }}/{{ __test_component__use_case_example_file }}"
+  ansible.builtin.template:
+    src: "test_use_case_example.md.j2"
+    dest: "{{ __test_component__test_base_dir }}/{{ 
+      __test_component__test_file_results_dir }}/{{ __test_component__use_case_example_file }}"
+    mode: "0644"
+
+- name: "{{ __test_component__log_save_test_results }} Initialize __test_component__git_comment_test_description"
+  ansible.builtin.set_fact:
+    __test_component__git_comment_test_description: "{{ 
+      __test_data.test_description | d('TEST ' + __test_case_id +': Save test results') }}"
+
+- name: "{{ __test_component__log_save_test_results }} Set __test_component__git_comment"
+  ansible.builtin.set_fact:
+    __test_component__git_comment: "{{ 
+      __test_component__git_comment_prefix }} - {{ __test_component__log_save_test_results }} {{ 
+      __test_component__git_comment_test_description }}"
+
+- name: "{{ __test_component__log_save_test_results }} Display __test_component__git_comment"
+  ansible.builtin.debug:
+    var: __test_component__git_comment
+
+- name: "{{ __test_component__log_save_test_results }} Git ACP update save test results"
+  when: __test_component__git_test_results_enabled|bool
+  dettonville.utils.git_pacp:
+    url: "{{ __test_component__git_repo_url }}"
+    path: "{{ __test_component__test_base_dir }}"
+    branch: "{{ __test_component__git_repo_branch }}"
+    comment: "{{ __test_component__git_comment }}"
+    ssh_params: "{{ __test_component__git_ssh_params }}"
+  register: __test_component__git_pacp_result

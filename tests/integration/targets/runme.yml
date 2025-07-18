@@ -1,0 +1,70 @@
+---
+
+- name: "runme | Run dettonville.git_inventory module tests"
+  hosts: localhost
+  connection: local
+  become: no
+  vars_files:
+    - ./../integration_config.vault.yml
+    - test-vars.yml
+  tasks:
+
+    - name: "runme | Init test vars"
+      tags: always
+      ansible.builtin.import_tasks: init-test-vars.yml
+
+    - name: "runme | test dettonville.git_inventory.update_hosts"
+      tags: update_hosts
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_hosts
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_job_url: "{{ __test_job_url }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "runme | test dettonville.git_inventory.update_groups"
+      tags: update_groups
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_groups
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_job_url: "{{ __test_job_url }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "runme | test dettonville.git_inventory.update_inventory"
+      tags: update_inventory
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_inventory
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_job_url: "{{ __test_job_url }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "runme | Reset test inventory data to start"
+      tags: always
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: reset-test-data.yml
+      vars:
+        test_component: update_inventory
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_job_url: "{{ __test_job_url }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"

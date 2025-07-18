@@ -1,0 +1,91 @@
+files:
+  {{ __expected_results_dir }}/{{ __expected_results_file }}:
+    all:
+      children:
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        ldap_client:
+          hosts:
+            web02.qa.site1.example.int: {}
+        location_site1:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/location_site1
+        network_dmz:
+          hosts:
+            web02.qa.site1.example.int: {}
+        network_internal:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        nfs_client:
+          hosts:
+            web02.qa.site1.example.int: {}
+        ntp_client:
+          hosts:
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+        rhel6:
+          hosts: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        ungrouped: {}
+        unica_proxy:
+          hosts:
+            web02.qa.site1.example.int: {}
+        vmware_flavor_medium:
+          hosts:
+            web01.qa.site1.example.int: {}
+        vmware_flavor_small:
+          hosts:
+            web02.qa.site1.example.int: {}
+        web_server:
+          hosts:
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+      hosts:
+        admin01.qa.site1.example.int:
+          provisioning_data: {}
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            infra_group: INFRA
+            service_domains:
+            - webapp101.qa.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: INFRA
+            service_domains:
+            - webapp102.qa.example.int

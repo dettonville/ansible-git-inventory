@@ -1,0 +1,129 @@
+files:
+  {{ __test_component__results_dir }}/group_vars/test_app.yml:
+    full_dict:
+      outer1_dict:
+        inner11_dict:
+          outer111_dict:
+            inner111_dict:
+              action: dont change me!
+              foo: bar111
+            inner111_key: inner111 key value
+          outer111_key: outer111 key value
+          outer112_dict:
+            inner112_dict:
+              action: dont change me!
+              foo: bar112
+            inner112_key: inner112 key value
+          outer112_key: outer112 key value
+        inner11_key: inner11 key value
+        inner12_dict:
+          outer121_dict:
+            inner121_dict:
+              action: inner121_dict had a complete change
+              foo: we overwrote inner121_dict
+              mynewkey: a shiny brand new key
+            inner121_key: NEW inner121 key value
+          outer121_key: NEW outer121 key value
+        inner12_key: NEW inner12 key value
+      outer1_key: NEW outer1 key value
+      outer2_dict:
+        inner21_dict:
+          outer211_dict:
+            inner211_dict:
+              action: dont change me!
+              foo: bar211 key
+            inner211_key: inner211 key value
+          outer211_key: outer211 key value
+          outer212_dict:
+            inner212_dict:
+              action: dont change me!
+              foo: bar212 key
+            inner212_key: inner212 key value
+          outer212_key: outer212 key value
+        inner21_key: inner21 key value
+        inner22_dict:
+          outer221_dict:
+            inner221_dict:
+              action: dont change me!
+              foo: bar221 key
+            inner221_key: inner221 key value
+          outer221_key: outer221 key value
+          outer222_dict:
+            inner222_dict:
+              action: dont change me!
+              foo: bar222 key
+            inner222_key: inner222 key value
+          outer222_key: outer222 key value
+        inner22_key: inner22 key value
+      outer2_key: outer2 key value
+  {{ __expected_results_dir }}/{{ __expected_results_file }}:
+    all:
+      children:
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        location_site1:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/location_site1
+        network_internal:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        rhel6:
+          hosts:
+            admin01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        test_app: {}
+        ungrouped: {}
+      hosts:
+        admin01.qa.site1.example.int:
+          trace_var: host_vars/admin01.qa.site1.example.int
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            jira_id: INFRA-1101
+          trace_var: host_vars/web01.qa.site1.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: DCC
+            jira_id: INFRA-1102
+          trace_var: host_vars/web02.qa.site1.example.int

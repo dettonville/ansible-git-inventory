@@ -1,0 +1,163 @@
+files:
+  {{ __expected_results_dir }}/{{ __expected_results_file }}: |
+    ---
+    all:
+      children:
+        admin_qa_site1:
+          vars:
+            infra_group: DCC
+        ######################################################
+        ## TODO: groups with prefix `ansible_controller_*` are deprecated/replaced/obsolesced by new group
+        ## with name prefix `ansible_localhost_*`.
+        ##
+        ## E.g., replace all `ansible_controller_iam` references with `ansible_localhost_iam`
+        ##
+        ## The original group name prefix `ansible_controller_*` has the problem/challenge/issue that it
+        ## could easily be mistaken/misconstrued to mean the ansible controller host instead of
+        ## the intended `localhost` execution environment container making it ambiguous and not clear.
+        ##
+        ## Naming the localhost groups with `ansible_localhost_*` makes it far more clearer that this group targets
+        ## the localhost.
+        ######################################################
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            ## example comment here for admin apps
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        ldap_client:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        ldap_server:
+          children:
+            admin_qa_site1: {}
+        location_site1:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/location_site1
+        network_internal:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        nfs_client:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        nfs_server:
+          children:
+            admin_qa_site1: {}
+        ntp_client:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        ntp_server:
+          children:
+            admin_qa_site1: {}
+        ocp_common:
+          children:
+            ocp_dev_s1: {}
+            ocp_dev_s4: {}
+            ocp_prod_s1: {}
+            ocp_prod_s4: {}
+            ocp_qa_s1: {}
+            ocp_qa_s4: {}
+          vars:
+            ocp_namespace_configuration:
+              - name1
+              - name2
+        ocp_dev_s1:
+          vars:
+            ocp_environment: dev
+            ocp_site: s1
+        ocp_dev_s4:
+          vars:
+            ocp_environment: dev
+            ocp_site: s4
+        ocp_prod_s1:
+          vars:
+            ocp_environment: prod
+            ocp_site: s1
+        ocp_prod_s4:
+          vars:
+            ocp_environment: prod
+            ocp_site: s4
+        ocp_qa_s1:
+          vars:
+            ocp_environment: qa
+            ocp_site: s1
+        ocp_qa_s4:
+          vars:
+            ocp_environment: qa
+            ocp_site: s4
+        rhel6:
+          hosts:
+            admin01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        ungrouped: {}
+        vmware_flavor_large:
+          children:
+            admin_qa_site1: {}
+        vmware_flavor_small:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        web_server:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        webapp01_qa_site1:
+          vars:
+            app_version: 2023086
+        webapp02_qa_site1:
+          vars:
+            app_version: 2023086
+      hosts:
+        admin01.qa.site1.example.int:
+          trace_var: host_vars/admin01.qa.site1.example.int
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            jira_id: PR-1101
+          trace_var: host_vars/web01.qa.site1.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: DCC
+            jira_id: PR-1102
+          trace_var: host_vars/web02.qa.site1.example.int

@@ -1,0 +1,23 @@
+---
+
+test_description: "Add groups with system_name and system_env"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+always_add_child_group_to_root: true
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: app_systest1
+    group_vars:
+      app_var: something here
+    children:
+      app_systest1_sandbox: {}
+  - group_name: app_systest2
+    group_vars:
+      app_var: something for app systest2 here
+    children:
+      app_systest2_sandbox: {}

@@ -1,0 +1,97 @@
+---
+
+test_description: "Vars overwrite for deep nested dict group var using vars_overwrite_depth=4"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+vars_state: overwrite
+vars_overwrite_depth: 4
+use_vars_files: true
+always_add_child_group_to_root: true
+
+test_start_data:
+  - file_path: group_vars/test_app.yml
+    content:
+      full_dict:
+        ## outer/inner[level_instance]_[key|dict]
+        outer1_key: "outer1 key value"
+        outer1_dict:
+          inner11_key: "inner11 key value"
+          inner11_dict:
+            outer111_key: "outer111 key value"
+            outer111_dict:
+              inner111_key: "inner111 key value"
+              inner111_dict:
+                foo: "bar111"
+                action: "dont change me!"
+            outer112_key: "outer112 key value"
+            outer112_dict:
+              inner112_key: "inner112 key value"
+              inner112_dict:
+                foo: "bar112"
+                action: "dont change me!"
+          inner12_key: "inner12 key value2"
+          inner12_dict:
+            outer121_key: "outer121 key value"
+            outer121_dict:
+              inner121_key: "inner121 key value"
+              inner121_dict:
+                foo: "bar121"
+                action: "change me"
+            outer122_key: "outer122 key value"
+            outer122_dict:
+              inner122_key: "inner122 key value"
+              inner122_dict:
+                foo: "bar122"
+                action: "dont change me!"
+
+        outer2_key: "outer2 key value"
+        outer2_dict:
+          inner21_key: "inner21 key value"
+          inner21_dict:
+            outer211_key: "outer211 key value"
+            outer211_dict:
+              inner211_key: "inner211 key value"
+              inner211_dict:
+                foo: "bar211 key"
+                action: "dont change me!"
+            outer212_key: "outer212 key value"
+            outer212_dict:
+              inner212_key: "inner212 key value"
+              inner212_dict:
+                foo: "bar212 key"
+                action: "dont change me!"
+          inner22_key: "inner22 key value"
+          inner22_dict:
+            outer221_key: "outer221 key value"
+            outer221_dict:
+              inner221_key: "inner221 key value"
+              inner221_dict:
+                foo: "bar221 key"
+                action: "dont change me!"
+            outer222_key: "outer222 key value"
+            outer222_dict:
+              inner222_key: "inner222 key value"
+              inner222_dict:
+                foo: "bar222 key"
+                action: "dont change me!"
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: test_app
+    group_vars:
+      full_dict:
+        ## outer/inner[level_instance]_[key|dict]
+        outer1_key: "NEW outer1 key value"
+        outer1_dict:
+          inner12_key: "NEW inner12 key value"
+          inner12_dict:
+            outer121_key: "NEW outer121 key value"
+            outer121_dict:
+              inner121_key: "NEW inner121 key value"
+              inner121_dict:
+                foo: "we overwrote inner121_dict"
+                mynewkey: "a shiny brand new key"
+                action: "inner121_dict had a complete change"

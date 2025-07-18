@@ -1,0 +1,19 @@
+---
+
+test_description: "Update group with children groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: true
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+    group_vars:
+      site: site1
+    children:
+      webapp01_qa_site1: {}
+      webapp02_qa_site1: {}

@@ -1,0 +1,44 @@
+---
+
+test_description: "Vars overwrite list dict host var using vars_overwrite_depth=1"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+vars_state: overwrite
+vars_overwrite_depth: 1
+use_vars_files: true
+
+test_start_data:
+  - file_path: host_vars/test123.qa.site1.example.int.yml
+    content:
+      ocp_namespaces:
+        - environmentx: "dev123"
+          project_name: "Project 123 [Dev]"
+          project_description:  "Project 123 XYZ [DEV] - blah blah blah"
+          project_size:  "10"
+          requester: "Joe Foobar"
+          build_name: "30230118"
+          dev_group: "OCP123-DEV-SG"
+          admin_group: "OCP123-ADMIN-SG"
+        - environmentx: "qa123"
+          project_name: "Project 123 [QA]"
+          project_description:  "Project 123 XYZ [QA] - blah blah blah"
+          project_size:  "10"
+          requester: "Mary Baroof"
+          build_name: "30230118"
+          dev_group: "OCP123-DEV-SG"
+          admin_group: "OCP123-ADMIN-SG"
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: test123.qa.site1.example.int
+    host_vars:
+      ocp_namespaces:
+        - environmentx: "qa124"
+          project_description:  "Project 124 XYZ [QA] - bloo blu boo"
+          project_size:  "16"
+          requester: "Another Name"
+          qa_group: "OCP124-QA-SG"
+          admin_group: "OCP124-ADMIN-SG"

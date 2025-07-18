@@ -1,0 +1,87 @@
+files:
+  {{ __expected_results_dir }}/{{ __expected_results_file }}: |
+    ---
+    all:
+      children:
+        ######################################################
+        ## TODO: groups with prefix `ansible_controller_*` are deprecated/replaced/obsolesced by new group
+        ## with name prefix `ansible_localhost_*`.
+        ##
+        ## E.g., replace all `ansible_controller_iam` references with `ansible_localhost_iam`
+        ##
+        ## The original group name prefix `ansible_controller_*` has the problem/challenge/issue that it
+        ## could easily be mistaken/misconstrued to mean the ansible controller host instead of
+        ## the intended `localhost` execution environment container making it ambiguous and not clear.
+        ##
+        ## Naming the localhost groups with `ansible_localhost_*` makes it far more clearer that this group targets
+        ## the localhost.
+        ######################################################
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            ## example comment here for admin apps
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        location_site1:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/location_site1
+        network_internal:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        ocp_common: {}
+        rhel6:
+          hosts:
+            admin01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        ungrouped: {}
+      hosts:
+        admin01.qa.site1.example.int:
+          trace_var: host_vars/admin01.qa.site1.example.int
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            jira_id: INFRA-1101
+          trace_var: host_vars/web01.qa.site1.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: DCC
+            jira_id: INFRA-1102
+          trace_var: host_vars/web02.qa.site1.example.int

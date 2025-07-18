@@ -1,0 +1,44 @@
+---
+
+- name: "Reset Test Data"
+  hosts: localhost
+  connection: local
+  vars_files: ./../integration_config.vault.yml
+  tasks:
+
+#    - name: "Set Test Vars"
+#      ansible.builtin.import_role:
+#        name: setup_test_vars
+#
+    - name: "Setup temp dir"
+      ansible.builtin.import_role:
+        name: setup_remote_tmp_dir
+
+    - name: "Setup test env"
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: setup-test-env.yml
+
+    - name: "Reset test update_hosts data to start"
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: reset-test-data.yml
+      vars:
+        test_component: update_hosts
+      tags: update_hosts
+
+    - name: "Reset test update_groups data to start"
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: reset-test-data.yml
+      vars:
+        test_component: update_groups
+      tags: update_groups
+
+    - name: "Reset test update_inventory data to start"
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: reset-test-data.yml
+      vars:
+        test_component: update_inventory
+      tags: update_inventory
