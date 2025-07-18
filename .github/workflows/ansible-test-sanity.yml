@@ -1,7 +1,7 @@
 ---
 name: Ansible Test Sanity
 
-on: [workflow_call] # allow this workflow to be called from other workflows
+on: [workflow_call, workflow_dispatch] # allow this workflow to be called from other workflows
 
 jobs:
   ansible_test_sanity:

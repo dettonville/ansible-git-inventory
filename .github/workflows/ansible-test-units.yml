@@ -1,7 +1,7 @@
 ---
 name: Ansible Test Units
 
-on: [workflow_call]
+on: [workflow_call, workflow_dispatch] # allow this workflow to be called from other workflows
 
 jobs:
   ansible_test_units:
