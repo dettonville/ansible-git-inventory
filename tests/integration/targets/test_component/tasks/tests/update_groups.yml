@@ -1,0 +1,74 @@
+---
+
+- name: "{{ __test_component__log_run_test }} Display pre-run test directory/file info"
+  ansible.builtin.debug:
+    msg:
+      - "__test_component__git_repo_url={{ __test_component__git_repo_url }}"
+      - "__test_component__git_repo_branch={{ __test_component__git_repo_branch }}"
+      - "__test_component__results_rundir={{ __test_component__results_rundir }}"
+      - "__test_component__test_file_path={{ __test_component__test_file_path }}"
+      - "__test_data.inventory_dir={{ __test_data.inventory_dir|d('') }}"
+      - "__test_data.inventory_file={{ __test_data.inventory_file|d('') }}"
+      - "__test_data.use_vars_files={{ __test_data.use_vars_files | d('') }}"
+
+- name: "{{ __test_component__log_run_test }} Set __test_component__test_case_args"
+  ansible.builtin.set_fact:
+    __test_component__test_case_args:
+      inventory_repo_url: "{{ __test_component__git_repo_url }}"
+      inventory_repo_branch: "{{ __test_component__git_repo_branch }}"
+      inventory_dir: "{{ __test_data.inventory_dir | d(omit) }}"
+      inventory_file: "{{ __test_data.inventory_file | d(__test_component__test_file_path) }}"
+      global_groups_file: "{{ __test_data.global_groups_file | d(omit) }}"
+      use_vars_files: "{{ __test_data.use_vars_files | d(omit) }}"
+      create_empty_groupvars_files: "{{ __test_data.create_empty_groupvars_files | d(omit) }}"
+      create_parent_groupvar_files: "{{ __test_data.create_parent_groupvar_files | d(omit) }}"
+      always_add_child_group_to_root: "{{ __test_data.always_add_child_group_to_root | d(omit) }}"
+      enable_groupvar_symlinks_for_child_inventories: "{{ 
+        __test_data.enable_groupvar_symlinks_for_child_inventories | d(omit) }}"
+      enforce_global_groups_must_already_exist: "{{ 
+        __test_data.enforce_global_groups_must_already_exist | d(False) }}"
+      state: "{{ __test_data.state | d(omit) }}"
+      vars_state: "{{ __test_data.vars_state | d(omit) }}"
+      vars_overwrite_depth: "{{ __test_data.vars_overwrite_depth | d(omit) }}"
+      git_comment_prefix: "{{ __test_data.git_comment_prefix | d(omit) }}"
+      git_comment_body: "{{ __test_data.git_comment_body | d(omit) }}"
+      jira_id: "{{ __test_data.jira_id | d(omit) }}"
+      group_list: "{{ __test_data.group_list | d(omit) }}"
+      ssh_params: "{{ __test_component__git_ssh_params }}"
+      logging_level: "{{ __test_data.logging_level | d(omit) }}"
+
+- name: "{{ __test_component__log_run_test }} Run test on {{ __test_component__collection }}.{{ __test_component }}"
+  ignore_errors: true
+  dettonville.git_inventory.update_groups: "{{ __test_component__test_case_args }}"
+  register: __test_component__test_result
+
+#- name: "{{ __test_component__log_run_test }} Run test on {{ __test_component__collection }}.{{ __test_component }}"
+#  ignore_errors: true
+#  dettonville.git_inventory.update_groups:
+#    inventory_repo_url: "{{ __test_component__git_repo_url }}"
+#    inventory_repo_branch: "{{ __test_component__git_repo_branch }}"
+#    inventory_dir: "{{ __test_data.inventory_dir | d(omit) }}"
+#    inventory_file: "{{ __test_data.inventory_file | d(__test_component__test_file_path) }}"
+#    global_groups_file: "{{ __test_data.global_groups_file | d(omit) }}"
+#    use_vars_files: "{{ __test_data.use_vars_files | d(omit) }}"
+#    create_empty_groupvars_files: "{{ __test_data.create_empty_groupvars_files | d(omit) }}"
+#    create_parent_groupvar_files: "{{ __test_data.create_parent_groupvar_files | d(omit) }}"
+#    always_add_child_group_to_root: "{{ __test_data.always_add_child_group_to_root | d(omit) }}"
+#    enable_groupvar_symlinks_for_child_inventories: "{{
+#      __test_data.enable_groupvar_symlinks_for_child_inventories | d(omit) }}"
+#    enforce_global_groups_must_already_exist: "{{
+#      __test_data.enforce_global_groups_must_already_exist | d(False) }}"
+#    state: "{{ __test_data.state | d(omit) }}"
+#    vars_state: "{{ __test_data.vars_state | d(omit) }}"
+#    vars_overwrite_depth: "{{ __test_data.vars_overwrite_depth | d(omit) }}"
+#    git_comment_prefix: "{{ __test_data.git_comment_prefix | d(omit) }}"
+#    git_comment_body: "{{ __test_data.git_comment_body | d(omit) }}"
+#    jira_id: "{{ __test_data.jira_id | d(omit) }}"
+#    group_list: "{{ __test_data.group_list | d(omit) }}"
+#    ssh_params: "{{ __test_component__git_ssh_params }}"
+#    logging_level: "{{ __test_data.logging_level | d(omit) }}"
+#  register: __test_component__test_result
+
+- name: "{{ __test_component__log_run_test }} Display __test_component__test_result"
+  ansible.builtin.debug:
+    var: __test_component__test_result

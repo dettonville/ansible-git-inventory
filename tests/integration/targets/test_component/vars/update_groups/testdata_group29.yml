@@ -1,0 +1,48 @@
+---
+
+test_description: "Add groups with parent inventory_dir specified"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+
+## test setting the inventory directory to parent
+## and symlinks from parent/group_vars into implied child inventory dir
+inventory_dir: "{{ __test_component__run_dir }}/{{ __test_component__inventory_root_dir }}"
+inventory_file: "SANDBOX/{{ __test_component__test_file }}"
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+test_start_data:
+  - file_path: DEV/hosts.yml
+    content:
+      all:
+        children:
+          app_foobar_dev:
+            hosts:
+              foobar01.dev.example.int: {}
+  - file_path: QA/hosts.yml
+    content:
+      all:
+        children:
+          app_foobar_qa:
+            hosts:
+              foobar01.qa.example.int: {}
+  - file_path: PROD/hosts.yml
+    content:
+      all:
+        children:
+          app_foobar_prod:
+            hosts:
+              foobar01.prod.example.int: {}
+
+group_list:
+  - group_name: admin_qa_site1
+    group_vars:
+      infra_group: DCC
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server

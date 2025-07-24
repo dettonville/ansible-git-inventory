@@ -1,0 +1,23 @@
+---
+
+test_description: "Overwrite vars in group_vars files"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+state: overwrite
+always_add_child_group_to_root: true
+
+test_start_data:
+  - file_path: group_vars/location_site1.yml
+    content:
+      site: site1
+      env: prod
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+    group_vars:
+      env: qa

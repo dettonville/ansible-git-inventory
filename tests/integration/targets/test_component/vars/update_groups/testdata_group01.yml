@@ -1,0 +1,83 @@
+---
+
+test_description: "Add groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+always_add_child_group_to_root: true
+#logging_level: DEBUG
+
+validate_yaml_content: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: admin_qa_site1
+    group_vars:
+      infra_group: DCC
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server
+  - group_name: webapp01_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      - vmware_flavor_small
+      - ntp_client
+      - nfs_client
+      - ldap_client
+      - web_server
+  - group_name: webapp02_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      - vmware_flavor_small
+      - ntp_client
+      - nfs_client
+      - ldap_client
+      - web_server
+  - group_name: ocp_common
+    group_vars:
+      ocp_namespace_configuration:
+        - name1
+        - name2
+  - group_name: ocp_dev_s1
+    group_vars:
+      ocp_environment: dev
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_qa_s1
+    group_vars:
+      ocp_environment: qa
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_prod_s1
+    group_vars:
+      ocp_environment: prod
+      ocp_site: s1
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_dev_s4
+    group_vars:
+      ocp_environment: dev
+      ocp_site: s4
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_qa_s4
+    group_vars:
+      ocp_environment: qa
+      ocp_site: s4
+    parent_groups:
+      - ocp_common
+  - group_name: ocp_prod_s4
+    group_vars:
+      ocp_environment: prod
+      ocp_site: s4
+    parent_groups:
+      - ocp_common

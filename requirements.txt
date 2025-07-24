@@ -1,0 +1,4 @@
+## library module requirements
+pylint
+pyyaml
+ruamel.yaml

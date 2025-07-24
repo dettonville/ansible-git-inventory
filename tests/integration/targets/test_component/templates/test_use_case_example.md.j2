@@ -1,0 +1,152 @@
+
+# Test Use Case - Example [{{ __test_case_id }}]
+
+Use Case [{{ __test_case_id }}]: {{ __test_data.test_description }}
+
+{% set _expected_results_files = {} %}
+{% set _expected_file_content = (lookup('file', 'test.start/' + __test_component__test_file )) %}
+{% set _expected_file_path = __test_component__results_dir + '/' + __test_component__test_file %}
+{% set _ = _expected_results_files.update({ _expected_file_path: _expected_file_content }) %}
+{% for _start_vars_item in __test_data.test_start_data|d([]) -%}
+{% set _var_file_path=__expected_results_dir + '/' + _start_vars_item.file_path %}
+{% set _var_file_content = _start_vars_item.content %}
+{% set _ = _expected_results_files.update({ _var_file_path: _var_file_content }) %}
+{%- endfor %}
+
+## Starting/Initial Setup
+
+### Initial Files
+
+{% if _expected_results_files|length>0 -%}
+{% for _expected_results_file_path in _expected_results_files.keys()|sort %}
+{% set _expected_results_file_ext = _expected_results_file_path.split('.')[-1] %}
+{% set _expected_results_file_content = _expected_results_files[_expected_results_file_path] %}
+{{ _expected_results_file_path }}:
+```yaml
+{% if _expected_results_file_content is string %}
+{{ _expected_results_file_content }}
+{% elif _expected_results_file_content is mapping %}
+{{ _expected_results_file_content | to_nice_yaml(indent=2) }}
+{% endif %}
+```
+
+{% endfor %}
+{% endif %}
+
+## Playbook Example
+
+```yaml
+---
+
+- name: "Run test on {{ __test_component__collection }}.{{ __test_component }}"
+  register: __test_component__test_result
+  {{ __test_component__collection }}.{{ __test_component }}:
+    {{ __test_component__test_case_args | to_nice_yaml(indent=2) | indent(4) }}
+
+- name: "Display __test_component__test_result"
+  ansible.builtin.debug:
+    var: __test_component__test_result
+```
+
+{% if __test_data.use_vars_files|d(__test_component__use_vars_files_default)|bool -%}
+{% for _groupvars_item in __test_data.group_list|d([]) | dettonville.utils.sort_dict_list(['group_name']) -%}
+{% set _groupvar_relative_filepath='group_vars/' + _groupvars_item.group_name + '.yml' %}
+{% set _groupvar_file_path=__expected_results_dir + '/' + _groupvar_relative_filepath %}
+{% if 'group_vars' in _groupvars_item and __test_data.state|d('present') in ['present', 'overwrite'] -%}
+{% set _groupvar_file_content = _groupvars_item.group_vars %}
+{%- elif __test_data.create_empty_groupvars_files|d(__test_component__create_empty_groupvars_files_default) -%}
+{%- if __test_data.validate_yaml_content|d(__test_component__validate_yaml_content_default)|bool %}
+{% set _groupvar_file_content = {} %}
+{%- else %}
+{% set _groupvar_file_content = '---\n{}' %}
+{%- endif %}
+{%- endif %}
+{% if __test_data.state|d('present') in ['present', 'overwrite'] and _groupvar_file_content is defined %}
+{% set _ = _expected_results_files.update({ _groupvar_file_path: _groupvar_file_content }) %}
+{% endif %}
+{% if __test_data.state|d('present') in ['absent'] and _expected_results_files[_groupvar_file_path] is defined %}
+{% set _ = _expected_results_files.pop(_groupvar_file_path, None) %}
+{%- endif %}
+{% set _parent__groupvars_items = _groupvars_item.parent_groups|d([]) + _groupvars_item.groups|d([]) -%}
+{% for _parent__groupvars_item in _parent__groupvars_items -%}
+{% set _parent__groupvar_relative_filepath='group_vars/' + _parent__groupvars_item + '.yml' %}
+{% set _parent_groupvar_file_path=__expected_results_dir + '/' + _parent__groupvar_relative_filepath %}
+{% set _parent_groupvar_file_content=_expected_results_files[_parent_groupvar_file_path]|d({}) %}
+{% if _parent_groupvar_file_content|length==0 %}
+{%- if __test_data.validate_yaml_content|d(__test_component__validate_yaml_content_default)|bool %}
+{% set _ = _expected_results_files.update({ _parent_groupvar_file_path: {} }) %}
+{%- else %}
+{% set _ = _expected_results_files.update({ _parent_groupvar_file_path: '---' }) %}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+{%- endfor %}
+{% for _hostvars_item in (__test_data.host_list|d([]) | dettonville.utils.sort_dict_list(['host_name'])) -%}
+{% set _hostvar_relative_filepath='host_vars/' + _hostvars_item.host_name + '.yml' %}
+{% set _hostvar_file_path=__expected_results_dir + '/' + _hostvar_relative_filepath %}
+{%- if 'host_vars' in _hostvars_item -%}
+{%- if __test_data.validate_yaml_content|d(__test_component__validate_yaml_content_default)|bool %}
+{% set _hostvar_file_content = _hostvars_item.host_vars %}
+{% else %}
+{% set _hostvar_file_content = "---\n" + _hostvars_item.host_vars | to_nice_yaml(indent=2) %}
+{%- endif %}
+{%- elif __test_data.create_empty_hostvars_files|d(__test_component__create_empty_hostvars_files_default) -%}
+{%- if __test_data.validate_yaml_content|d(__test_component__validate_yaml_content_default)|bool %}
+{% set _hostvar_file_content = {} %}
+{%- else %}
+{% set _hostvar_file_content = '---\n{}' %}
+{%- endif %}
+{%- endif %}
+{% if __test_data.state|d('present') in ['present', 'overwrite'] and _hostvar_file_content is defined %}
+{% set _ = _expected_results_files.update({ _hostvar_file_path: _hostvar_file_content }) %}
+{% else %}
+{% set _ = _expected_results_files.pop(_hostvar_file_path, None) %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- set _expected_results = (lookup('template', __expected_results_template, errors='ignore') | from_yaml) %}
+{%- if _expected_results.files|d({})|length>0 %}
+{% for _expected_file_path, _expected_file_content in _expected_results.files.items() -%}
+{% set _ = _expected_results_files.update({ _expected_file_path: _expected_file_content }) %}
+{%- endfor %}
+{%- endif %}
+
+## Playbook Run Results
+
+The run Result
+
+```shell
+TASK [Run test on {{ __test_component__collection }}.{{ __test_component }}]
+TASK [Display __test_component__test_result]
+ok: [localhost] =>
+  {{ __test_component__test_result | to_nice_yaml(indent=2) | indent(2) }}
+
+```
+
+### Resulting file content after running the playbook
+
+{% if __test_data.test_expected.changed|d(True)|bool -%}
+
+{% if _expected_results_files|length>0 -%}
+{% for _expected_results_file_path in _expected_results_files.keys()|sort %}
+{% set _expected_results_file_ext = _expected_results_file_path.split('.')[-1] %}
+{% set _expected_results_file_content = _expected_results_files[_expected_results_file_path] %}
+{{ _expected_results_file_path }}:
+```yaml
+{% if _expected_results_file_content is string %}
+{{ _expected_results_file_content }}
+{% elif _expected_results_file_content is mapping %}
+{{ _expected_results_file_content | to_nice_yaml(indent=2) }}
+{%- endif %}
+```
+
+{% endfor %}
+{% endif %}
+{% if _expected_results.links|d([])|length>0 -%}
+symlinks:
+  {{ _expected_results.links | to_nice_yaml(indent=2) | indent(2) }}
+{%- endif %}
+{% else %}
+
+No Files changed.
+{% endif %}

@@ -1,0 +1,51 @@
+---
+authors:
+  - Dettonville Development Team
+  - Lee Johnson - ljohnson@dettonville.com
+dependencies:
+  dettonville.utils: ">=2025.7.2"
+description: Add, update, and/or remove group and/or host nodes to a specified YAML-file based git inventory.
+issues: https://github.com/dettonville/ansible-git-inventory/issues
+license_file: LICENSE.md
+name: git_inventory
+namespace: dettonville
+readme: README.md
+repository: https://github.com/dettonville/ansible-git-inventory
+tags:
+  - linux
+  - utilities
+  - git
+  - inventory
+version: 2025.7.2
+# https://docs.ansible.com/ansible/devel/dev_guide/developing_collections_distributing.html#ignoring-files-and-folders
+manifest:
+  directives:
+    - include meta/runtime.yml
+    - include README.md LICENSE.md
+    - recursive-include docs */**.md
+    # avoid using 'recursive-include plugins/*.py' since it
+    # includes directories specified to be excluded if they contain *.py files
+    # this has the inconvenience/disadvantage of having to explicitly
+    # include each plugin sub-dir as seen below :`(
+    #    - recursive-include plugins */**.py
+    - include plugins/module_utils/*.py
+    - include plugins/modules/*.py
+    - include plugins/lookups/*.py
+    - include plugins/action/*.py
+    - include plugins/become/*.py
+    - include plugins/cache/*.py
+    - include plugins/callback/*.py
+    - include plugins/connection/*.py
+    - include plugins/doc_fragments/*.py
+    - include plugins/filter/*.py
+    - include plugins/inventory/*.py
+    - include plugins/lookup/*.py
+    - include plugins/module_utils/*.py
+    - include plugins/modules/*.py
+    - include plugins/plugin_utils/*.py
+    - exclude galaxy.yml MANIFEST.json FILES.json <namespace>-<name>-*.tar.gz
+    - recursive-exclude tests/output **
+    - recursive-exclude releases **
+    - recursive-exclude **/save/ **
+    - recursive-exclude **/archive/ **
+  omit_default_directives: true

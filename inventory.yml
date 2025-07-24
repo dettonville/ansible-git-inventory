@@ -1,0 +1,18 @@
+all:
+  children:
+    databases:
+      hosts:
+        db1:
+          ansible_host: 192.168.1.20
+    webservers:
+      hosts:
+        host1: {}
+        host2: {}
+      vars:
+        http_port: 80
+        https_port: 443
+  hosts:
+    host1:
+      ansible_host: 192.168.1.10
+    host2:
+      ansible_host: 192.168.1.11

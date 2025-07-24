@@ -1,0 +1,43 @@
+---
+
+test_description: "Overwrite groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+state: overwrite
+use_vars_files: false
+always_add_child_group_to_root: true
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1
+    group_vars:
+      site: site1
+  - group_name: admin_qa_site1
+    group_vars:
+      provisioning_data: {}
+  - group_name: webapp01_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      - vmware_flavor_medium
+      - rhel7
+      - network_internal
+      - location_site1
+      - ntp_client
+      - web_server
+  - group_name: webapp02_qa_site1
+    group_vars:
+      app_version: 2023086
+    parent_groups:
+      - vmware_flavor_small
+      - rhel7
+      - network_dmz
+      - location_site1
+      - ntp_client
+      - nfs_client
+      - ldap_client
+      - web_server
+      - unica_proxy

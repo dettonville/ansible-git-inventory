@@ -1,0 +1,18 @@
+---
+
+test_description: "Add host with empty group"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+#use_vars_files: false
+validate_yaml_content: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: abc123.dev.site1.example.int
+    parent_groups:
+      - dev_mem
+      - lnx_dev
+      - ''

@@ -1,0 +1,107 @@
+files:
+  {{ __expected_results_dir }}/{{ __expected_results_file }}:
+    all:
+      children:
+        admin_qa_site1:
+          vars:
+            provisioning_data: {}
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        ldap_client:
+          children:
+            webapp02_qa_site1: {}
+        location_site1:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+          vars:
+            site: site1
+        network_dmz:
+          children:
+            webapp02_qa_site1: {}
+        network_internal:
+          children:
+            webapp01_qa_site1: {}
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        nfs_client:
+          children:
+            webapp02_qa_site1: {}
+        ntp_client:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        rhel6:
+          hosts:
+            admin01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        ungrouped: {}
+        unica_proxy:
+          children:
+            webapp02_qa_site1: {}
+        vmware_flavor_medium:
+          children:
+            webapp01_qa_site1: {}
+        vmware_flavor_small:
+          children:
+            webapp02_qa_site1: {}
+        web_server:
+          children:
+            webapp01_qa_site1: {}
+            webapp02_qa_site1: {}
+        webapp01_qa_site1:
+          vars:
+            app_version: 2023086
+        webapp02_qa_site1:
+          vars:
+            app_version: 2023086
+      hosts:
+        admin01.qa.site1.example.int:
+          trace_var: host_vars/admin01.qa.site1.example.int
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            jira_id: INFRA-1101
+          trace_var: host_vars/web01.qa.site1.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: DCC
+            jira_id: INFRA-1102
+          trace_var: host_vars/web02.qa.site1.example.int

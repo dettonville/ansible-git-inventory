@@ -1,0 +1,70 @@
+---
+
+test_description: "Add and update hosts with vars in host_vars files"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+#validate_yaml_content: false
+
+test_start_data:
+  - file_path: host_vars/test123.qa.site1.example.int.yml
+    content:
+      appname: test123
+      site: site1
+      env: qa
+  - file_path: host_vars/test123.dev.site1.example.int.yml
+    content:
+      appname: test123
+      site: site1
+      env: dev
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: admin01.qa.site1.example.int
+    host_vars:
+      provisioning_data:
+        infra_group: DCC
+        service_domains:
+          - admin.qa.example.int
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server
+  - host_name: web01.qa.site1.example.int
+    host_vars:
+      provisioning_data:
+        service_domains:
+          - webapp101.qa.example.int
+          - webapp101.qa.site1.example.int
+        infra_group: INFRA
+    parent_groups:
+      - vmware_flavor_small
+      - ntp_client
+      - nfs_client
+      - ldap_client
+      - web_server
+  - host_name: web02.qa.site1.example.int
+    host_vars:
+      provisioning_data:
+        service_domains:
+          - webapp102.qa.example.int
+        infra_group: INFRA
+    parent_groups:
+      - vmware_flavor_small
+      - ntp_client
+      - nfs_client
+      - ldap_client
+      - web_server
+  - host_name: vmlnx123.qa.site1.example.int
+    host_vars:
+      service_domains:
+        - app123.qa.example.int
+      os_node: 'bronze'
+    parent_groups:
+      - vmware_flavor_medium
+      - ntp_client
+      - ldap_client

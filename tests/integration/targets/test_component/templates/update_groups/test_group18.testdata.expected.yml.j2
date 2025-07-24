@@ -1,0 +1,93 @@
+files:
+  {{ __test_component__results_dir }}/group_vars/ocp_common.yml:
+    ocp_namespaces:
+      ocp_dev123:
+        admin_group: OCP123-ADMIN-SG
+        build_name: '30230118'
+        dev_group: OCP123-DEV-SG
+        environmentx: dev123
+        project_description: Project 123 XYZ [DEV] - blah blah blah
+        project_name: Project 123 [Dev]
+        project_size: '10'
+        requester: Joe Foobar
+      ocp_qa123:
+        admin_group: OCP123-ADMIN-SG
+        build_name: '30230118'
+        dev_group: OCP123-DEV-SG
+        environmentx: qa123
+        project_description: Project 123 XYZ [QA] - bloo blu boo
+        project_name: Project 123 [QA]
+        project_size: '16'
+        qa_group: OCP123-QA-SG
+        requester: Another Name
+  {{ __expected_results_dir }}/{{ __expected_results_file }}:
+    all:
+      children:
+        ansible_localhost:
+          children:
+            ansible_controller_iam: {}
+            ansible_localhost_iam: {}
+        environment_test:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/environment_test
+        location_site1:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/location_site1
+        network_internal:
+          hosts:
+            admin01.qa.site1.example.int: {}
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/network_internal
+        ocp_common: {}
+        rhel6:
+          hosts:
+            admin01.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel6
+        rhel7:
+          hosts:
+            admin02.qa.site1.example.int: {}
+            app01.qa.site1.example.int: {}
+            app02.qa.site1.example.int: {}
+            web01.qa.site1.example.int: {}
+            web02.qa.site1.example.int: {}
+          vars:
+            trace_var: group_vars/rhel7
+        ungrouped: {}
+      hosts:
+        admin01.qa.site1.example.int:
+          trace_var: host_vars/admin01.qa.site1.example.int
+        admin02.qa.site1.example.int:
+          trace_var: host_vars/admin02.qa.site1.example.int
+        app01.qa.site1.example.int:
+          trace_var: host_vars/app01.qa.site1.example.int
+        app02.qa.site1.example.int:
+          trace_var: host_vars/app02.qa.site1.example.int
+        web01.qa.site1.example.int:
+          provisioning_data:
+            jira_id: PR-1101
+          trace_var: host_vars/web01.qa.site1.example.int
+        web02.qa.site1.example.int:
+          provisioning_data:
+            infra_group: DCC
+            jira_id: PR-1102
+          trace_var: host_vars/web02.qa.site1.example.int

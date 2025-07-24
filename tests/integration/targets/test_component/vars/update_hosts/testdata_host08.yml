@@ -1,0 +1,31 @@
+---
+
+test_description: "Add hosts with variable name references using raw/unsafe directive"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+validate_yaml_content: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: admin01.qa.site1.example.int
+    host_vars:
+      site: site1
+      service_domains:
+        - admin.qa.example.int
+      ## ref: https://groups.google.com/g/ansible-project/c/fa2UWZM_SSg/m/7B_qBpM4MrAJ
+  #      ocp_cluster_url: '{% raw %}https://api.{{ ocp_environment|lower }}{{ ocp_site }}.example.org:6443{% endraw %}'
+      ocp_cluster_url: !unsafe "https://api.{{ ocp_environment|lower }}{{ ocp_site }}.example.org:6443"
+      ocp_namespace_configuration:
+        - name: name1
+          value: 'something else'
+        - name: name2
+          value: raboof
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server

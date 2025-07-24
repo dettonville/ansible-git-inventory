@@ -1,0 +1,14 @@
+---
+
+test_description: "Remove groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+state: absent
+use_vars_files: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: location_site1

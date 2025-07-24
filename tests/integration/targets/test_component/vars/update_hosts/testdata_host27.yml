@@ -1,0 +1,39 @@
+---
+
+test_description: "Add hosts - validate hosts are inserted in sort order"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: false
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: vmlnx123.qa.site1.example.int
+    parent_groups:
+      - vmware_flavor_medium
+      - environment_test
+      - ntp_client
+      - ldap_client
+  - host_name: test123.qa.site1.example.int
+    parent_groups:
+      - vmware_flavor_medium
+      - environment_test
+      - ntp_client
+      - nfs_client
+      - ldap_client
+  - host_name: abc123.qa.site1.example.int
+    parent_groups:
+      - vmware_flavor_medium
+      - environment_test
+      - ntp_client
+      - nfs_client
+      - ldap_client
+  - host_name: abc123.dev.site1.example.int
+    parent_groups:
+      - vmware_flavor_medium
+      - environment_test
+      - ntp_client
+      - nfs_client
+      - ldap_client

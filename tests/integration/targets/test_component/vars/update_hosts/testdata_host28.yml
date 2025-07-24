@@ -1,0 +1,36 @@
+---
+
+test_description: "Add hosts with global groups enforcement"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+
+enforce_global_groups_must_already_exist: true
+global_groups_file: "xenv_groups.yml"
+
+test_start_data:
+  - file_path: xenv_groups.yml
+    content:
+      all:
+        children:
+          ansible_localhost:
+            children:
+              ansible_controller_iam: {}
+              ansible_localhost_iam: {}
+          app_abc123:
+            children:
+              app_abc123_dev: {}
+              app_abc123_prod: {}
+              app_abc123_qa: {}
+              app_abc123_sandbox: {}
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: test123.prod.site1.example.int
+    parent_groups:
+      - app_abc123_prod
+  - host_name: test123.qa.site2.example.int
+    parent_groups:
+      - app_abc123_qa

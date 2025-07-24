@@ -1,0 +1,46 @@
+---
+
+test_description: "Add groups to xenv_groups"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+#logging_level: DEBUG
+use_vars_files: false
+create_empty_groupvars_files: false
+
+#enforce_global_groups_must_already_exist: true
+global_groups_file: "xenv_groups.yml"
+
+## test setting the inventory directory to parent
+## and symlinks from parent/group_vars into implied child inventory dir
+inventory_dir: "{{ __test_component__run_dir }}/{{ __test_component__inventory_root_dir }}"
+inventory_file: "xenv_groups.yml"
+
+test_start_data:
+  - file_path: xenv_groups.yml
+    is_raw: true
+    content: |
+      ---
+      all:
+        children:
+          ansible_localhost:
+            children:
+              ansible_controller_iam: {}
+              ansible_localhost_iam: {}
+          app_abc123:
+            children:
+              app_abc123_dev: {}
+              app_abc123_prod: {}
+              app_abc123_qa: {}
+              app_abc123_sandbox: {}
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+group_list:
+  - group_name: admin_qa_site1
+    parent_groups:
+      - vmware_flavor_large
+      - ntp_server
+      - nfs_server
+      - ldap_server

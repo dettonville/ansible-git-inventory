@@ -1,0 +1,27 @@
+---
+
+test_description: "Remove hosts with vars in host_vars files"
+git_comment_prefix: "{{ __test_component__git_comment_prefix }}"
+use_vars_files: true
+state: absent
+
+test_start_data:
+  - file_path: host_vars/test123.qa.site1.example.int.yml
+    content:
+      appname: test123
+      site: site1
+      env: qa
+  - file_path: host_vars/test123.dev.site1.example.int.yml
+    content:
+      appname: test123
+      site: site1
+      env: dev
+
+test_expected:
+  changed: True
+  failed: False
+  message: "Inventory updated successfully"
+
+host_list:
+  - host_name: test123.qa.site1.example.int
+  - host_name: test123.dev.site1.example.int

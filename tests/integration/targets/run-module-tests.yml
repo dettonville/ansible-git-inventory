@@ -1,0 +1,126 @@
+---
+
+- name: "run-module-tests | Run module tests"
+  hosts: localhost
+  connection: local
+  become: no
+  vars_files:
+    - ./../integration_config.vault.yml
+    - test-vars.yml
+  tasks:
+
+    - name: "run-module-tests | Init test vars"
+      tags: always
+      ansible.builtin.import_tasks: init-test-vars.yml
+
+    - name: "run-module-tests | test dettonville.git_inventory.update_hosts"
+      tags: update_hosts
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_hosts
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "run-module-tests | test dettonville.git_inventory.update_groups"
+      tags: update_groups
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_groups
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "run-module-tests | test dettonville.git_inventory.update_inventory"
+      tags: update_inventory
+      ansible.builtin.import_role:
+        name: test_component
+      vars:
+        test_component: update_inventory
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__test_case_id_list: "{{ test_case_id_list | d([]) }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "run-module-tests | Reset test inventory data to start"
+      tags:
+        - update_inventory
+        - update_hosts
+        - update_groups
+      ansible.builtin.import_role:
+        name: test_component
+        tasks_from: reset-test-data.yml
+      vars:
+        test_component: update_inventory
+        test_component__test_base_dir: "{{ __test_job__test_base_dir }}"
+        test_component__git_ssh_private_keydir: "{{ __test_job__git_ssh_private_keydir }}"
+        test_component__git_branch: "{{ __test_git_branch }}"
+        test_component__git_commit_hash: "{{ __test_git_commit_hash }}"
+        test_component__git_commit_hash_short: "{{ __test_git_commit_hash_short }}"
+
+    - name: "run-module-tests | Report final test results"
+      tags: always
+      when: __test_job__raise_final_excp_upon_test_failure|d(False)|bool
+      block:
+
+        - name: "run-module-tests | Display ansible_run_tags"
+          ansible.builtin.debug:
+            var: ansible_run_tags
+
+        - name: "run-module-tests | Display test_case_id_list"
+          ansible.builtin.debug:
+            var: test_case_id_list
+
+        - name: "run-module-tests | Display __test_component__test_case_id_run_list"
+          ansible.builtin.debug:
+            var: __test_component__test_case_id_run_list
+
+        - name: "run-module-tests | Display __test_run_results"
+          ansible.builtin.debug:
+            var: __test_run_results | d({})
+            verbosity: 1
+
+        - name: "run-module-tests | Set __failed_test_run_results"
+          ansible.builtin.set_fact:
+            __failed_test_run_results: |
+              {% set _failed_test_run_components = {} %}
+              {%- set _failed_test_run_results = {} %}
+              {%- set _ = _failed_test_run_results.update({'test_failed': False }) %}
+              {%- if __test_run_results.test_components is defined %}
+              {%- for _test_component, _test_run_component_results in __test_run_results.test_components.items() %}
+                {%- set _failed_test_run_cases_results = {} %}
+                {%- for _test_case_id, _test_case_result in _test_run_component_results.test_cases.items() %}
+                  {%- if (_test_case_result.test_failed) %}
+                    {%- set _ = _failed_test_run_cases_results.update({ _test_case_id: _test_case_result }) %}
+                    {%- set _ = _failed_test_run_results.update({'test_failed': True }) %}
+                  {%- endif %}
+                {%- endfor %}
+                {%- if _failed_test_run_cases_results|length>0 %}
+                  {%- set _ = _failed_test_run_components.update({ _test_component: { 'test_cases': _failed_test_run_cases_results } }) %}
+                {%- endif %}
+              {%- endfor %}
+              {%- endif %}
+              {%- set _ = _failed_test_run_results.update({ 'failed_test_components': _failed_test_run_components }) %}
+              {{ _failed_test_run_results | to_json | from_json }}
+
+        - name: "run-module-tests | Display __failed_test_run_results"
+          ansible.builtin.debug:
+            var: __failed_test_run_results
+
+        - name: "run-module-tests | If tests failed, emit failure"
+          when: __failed_test_run_results.test_failed|d(False)
+          vars:
+            failed_task:
+              result: "{{ __failed_test_run_results }}"
+          ansible.builtin.fail:
+            msg: "{{ failed_task }}"
