@@ -8,6 +8,11 @@ testDeps:
   - dettonville.utils
 # preTestCmd: >-
 #  pip install -r requirements.txt
+# preTestCmd: >-
+#  export -p | sed 's/declare -x //' | sed 's/export //'
+#  ansible-test --version
+preTestCmd: >-
+  ansible --version
 strategy:
   fail-fast: false
   matrix:
