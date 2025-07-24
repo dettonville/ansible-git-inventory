@@ -48,6 +48,7 @@ jobs:
           pull-request-change-detection: false
           coverage: never # coverage is always very low for sanity tests, and doesn't make much sense
           pre-test-cmd: >-
+            export -p | sed 's/declare -x //' | sed 's/export //'
             ansible-test --version
 
   # This job does nothing and is only used for the branch protection

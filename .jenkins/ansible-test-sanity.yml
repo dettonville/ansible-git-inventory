@@ -4,6 +4,8 @@
 # testingType is automatically set to 'sanity' by runAnsibleTestSanity
 # testingType:
 #  - sanity
+testDeps:
+  - dettonville.utils
 # preTestCmd: >-
 #  pip install -r requirements.txt
 strategy:
