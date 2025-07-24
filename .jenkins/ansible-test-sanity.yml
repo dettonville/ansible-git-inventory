@@ -12,7 +12,7 @@ testDeps:
 #  export -p | sed 's/declare -x //' | sed 's/export //'
 #  ansible-test --version
 preTestCmd: >-
-  ansible --version
+  ansible --version && pwd
 strategy:
   fail-fast: false
   matrix:
