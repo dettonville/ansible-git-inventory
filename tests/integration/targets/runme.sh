@@ -13,7 +13,6 @@
 #echo "$(export -p | sed 's/declare -x //')"
 
 #VERSION="2025.7.1"
-KEEP_TEMP_DIR=0
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 SCRIPT_NAME="$(basename "$0")"
@@ -22,6 +21,9 @@ SCRIPT_NAME_PREFIX="${SCRIPT_NAME%.*}"
 PLAYBOOK="${SCRIPT_NAME_PREFIX}.yml"
 PROJECT_DIR="$( cd "$SCRIPT_DIR/" && git rev-parse --show-toplevel )"
 
+## only needed if sourcing local private collections by source instead of galaxy
+## NEEDED when there is are updates/changes to the dependent collections
+## to be deployed along with the project repo update(s)
 #PROJECT_PARENT_DIR="${PROJECT_DIR}/.."
 PROJECT_PARENT_DIR=$(dirname "${PROJECT_DIR}")
 
@@ -29,7 +31,7 @@ VAULTPASS_FILEPATH="${HOME}/.vault_pass"
 if [[ -f "${PROJECT_DIR}/.vault_pass" ]]; then
   VAULTPASS_FILEPATH="${PROJECT_DIR}/.vault_pass"
 fi
-VAULT_FILEPATH="./../integration_config.vault.yml"
+#VAULT_FILEPATH="./../integration_config.vault.yml"
 #TEST_VARS_FILE="test-vars.yml"
 
 INSTALL_GALAXY_COLLECTIONS=1
@@ -50,16 +52,13 @@ echo "VAULT_ID=${VAULT_ID}"
 ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/collections/requirements.yml"
 #ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/collections/requirements.test.yml"
 
-echo "ANSIBLE_COLLECTION_REQUIREMENTS=${ANSIBLE_COLLECTION_REQUIREMENTS}"
-
-export LOCAL_COLLECTIONS_PATH="${HOME}/.ansible"
+export LOCAL_COLLECTIONS_PATH=${HOME}/.ansible
 #export ANSIBLE_ROLES_PATH=./
-#export ANSIBLE_COLLECTIONS_PATH="${LOCAL_COLLECTIONS_PATH}:${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections"
-#export ANSIBLE_COLLECTIONS_PATH="${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections"
-#export ANSIBLE_COLLECTIONS_PATH="${PROJECT_PARENT_DIR}/requirements_collections"
-#export ANSIBLE_COLLECTIONS_PATH="${PROJECT_DIR}/collections"
-#export ANSIBLE_COLLECTIONS_PATH="${PROJECT_DIR}/collections:${LOCAL_COLLECTIONS_PATH}"
-export ANSIBLE_COLLECTIONS_PATH="${LOCAL_COLLECTIONS_PATH}"
+#export ANSIBLE_COLLECTIONS_PATH=${LOCAL_COLLECTIONS_PATH}:${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections
+#export ANSIBLE_COLLECTIONS_PATH=${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections
+#export ANSIBLE_COLLECTIONS_PATH=${PROJECT_PARENT_DIR}/requirements_collections
+#export ANSIBLE_COLLECTIONS_PATH=${PROJECT_DIR}/collections
+export ANSIBLE_COLLECTIONS_PATH=${PROJECT_DIR}/collections:${LOCAL_COLLECTIONS_PATH}
 
 if [[ "${USE_SOURCE_COLLECTIONS}" -eq 1 ]]; then
   export ANSIBLE_COLLECTIONS_PATH=${SOURCE_COLLECTIONS_PATH}:${ANSIBLE_COLLECTIONS_PATH}
@@ -72,10 +71,6 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ## ref: https://github.com/ansible/ansible/issues/79557#issuecomment-1344168449
 #export ANSIBLE_GALAXY_IGNORE=true
 #export GALAXY_IGNORE_CERTS=true
-
-function cleanup_tmpdir() {
-  test "${KEEP_TEMP_DIR:-0}" = 1 || rm -rf "${TEMP_DIR}"
-}
 
 function install_galaxy_collections() {
 
@@ -104,9 +99,9 @@ function install_galaxy_collections() {
 
 function main() {
 
-  ANSIBLE_ARGS=()
+  PLAYBOOK_ARGS=()
   if [ $# -gt 0 ]; then
-    ANSIBLE_ARGS=("$@")
+    PLAYBOOK_ARGS=("$@")
   fi
 
   rm -f ./ansible.log
@@ -119,7 +114,6 @@ function main() {
   if [[ "${INSTALL_GALAXY_COLLECTIONS}" -eq 1 || "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
     install_galaxy_collections
   fi
-
   echo "==> ansible-galaxy collection list"
   ansible-galaxy collection list
 
@@ -149,8 +143,8 @@ function main() {
 #  PLAYBOOK_CMD+=("-e @${TEST_VARS_FILE}")
 #  PLAYBOOK_CMD+=("-e @${VAULT_FILEPATH}")
   PLAYBOOK_CMD+=("--vault-password-file ${VAULTPASS_FILEPATH}")
-  if [[ "${#ANSIBLE_ARGS[@]}" -gt 0 ]]; then
-    PLAYBOOK_CMD+=("${ANSIBLE_ARGS[*]}")
+  if [[ "${#PLAYBOOK_ARGS[@]}" -gt 0 ]]; then
+    PLAYBOOK_CMD+=("${PLAYBOOK_ARGS[*]}")
   fi
   PLAYBOOK_CMD+=("${PLAYBOOK}")
 

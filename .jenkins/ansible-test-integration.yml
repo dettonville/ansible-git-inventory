@@ -1,5 +1,8 @@
 ---
 # .jenkins/ansible-test-integration.yml
+debugVerbosity: "-v"
+preTestCmd: >-
+  ansible --version
 # testingType is automatically set to 'integration' by runAnsibleTestIntegration
 # testingType:
 #  - integration
@@ -7,8 +10,6 @@ testDeps:
   - community.general
   - ansible.posix
   - dettonville.utils
-# preTestCmd: >-
-#  pip install -r requirements.txt
 strategy:
   fail-fast: false
   matrix:
@@ -18,5 +19,5 @@ strategy:
       # Testing all ansible and python versions is impractical. Only test the newest and
       # oldest versions of each that we support
       - {pythonVersion: '3.13', ansibleVersion: stable-2.19}
-#      - { pythonVersion: "3.10", ansibleVersion: stable-2.16 }
-#      - { pythonVersion: "3.13", ansibleVersion: devel }
+#      - {pythonVersion: '3.10', ansibleVersion: stable-2.16}
+#      - {pythonVersion: '3.13', ansibleVersion: devel}

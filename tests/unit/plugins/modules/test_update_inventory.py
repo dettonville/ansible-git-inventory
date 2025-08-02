@@ -88,11 +88,6 @@ all:
         with open(self.inventory_file_path, "w") as f:
             f.write(self.sample_inventory)
 
-        # self.setup_module_object = setup_module_object
-        # self.main = module_main
-        # self.run_module = run_module
-        self.module = update_inventory
-
     def tearDown(self):
         """Clean up test fixtures."""
         super(TestUpdateInventoryModule, self).tearDown()

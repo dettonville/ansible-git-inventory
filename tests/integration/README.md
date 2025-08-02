@@ -6,16 +6,12 @@
 ```shell
 ## ref: https://github.com/ansible/ansible/issues/76322
 ## ref: https://github.com/ansible/ansible/issues/32499
-$ export TEST_PYTHON_VERSION="3.10"
+$ export TEST_PYTHON_VERSION="3.12"
 $ export ANSIBLE_KEEP_REMOTE_FILES=1
 $ export ANSIBLE_DEBUG=1
+## is MacOS
 $ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-$ PROJECT_DIR="$( git rev-parse --show-toplevel )"
-$ COLLECTION_DIR=${PROJECT_DIR}/collections/ansible_collections/dettonville/git_inventory
-$ echo "COLLECTION_DIR=${COLLECTION_DIR}"
-$ cd ${COLLECTION_DIR}
 ```
-
 
 If running on MacOS may get the following error:
 ```output
@@ -94,11 +90,8 @@ Run command: docker rm -f ansible-test-controller-Nl1njsLi
 
 ```
 
-* [Full detailed results here](./test-results.update_hosts.md)
-* [Full detailed colorized results here](./test-results.update_hosts.pdf)
 
-
-## Debugging test module
+## Debugging modules
 
 ```shell
 $ cd ${HOME}/.ansible/tmp/
@@ -106,6 +99,8 @@ $ ls -Fla ../$(ls -Fla ../ | tail -16 | head -1 | cut -d':' -f2 | cut -d' ' -f2)
 $ cd ${HOME}/.ansible/tmp/ansible-tmp-1657821639.432363-21127-34939542886107
 ./AnsiballZ_update_hosts.py explode
 ./AnsiballZ_update_hosts.py execute | jq
+## OR if jq unavailable
+./AnsiballZ_update_hosts.py execute | python -m json.tool
 ```
 
 ### Run All Tests
@@ -114,3 +109,8 @@ $ cd ${HOME}/.ansible/tmp/ansible-tmp-1657821639.432363-21127-34939542886107
 tests/run_tests.sh > run_test.results.txt
 
 ```
+
+### Debugging module references
+
+* https://docs.ansible.com/ansible/latest/dev_guide/debugging.html
+* https://yaobinwen.github.io/2021/01/29/Ansible-how-to-debug-a-problematic-module.html

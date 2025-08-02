@@ -22,21 +22,36 @@ import inspect
 from typing import Type, TypeVar
 
 from ansible.module_utils.common.text.converters import to_text
+from ansible.module_utils.six import raise_from
 
 # noinspection PyUnresolvedReferences
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
     InventoryParser,
 )
-
 # noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import Git
-
-# noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.utils.plugins.module_utils.utils import (
-    PrettyLog,
-    get_collection_version,
-    UtilsModuleException,
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
+    MissingLibError,
 )
+
+# noinspection PyUnresolvedReferences
+try:
+    from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import Git
+except ImportError as imp_exc:
+    GIT_ACTIONS_IMPORT_ERROR = imp_exc
+else:
+    GIT_ACTIONS_IMPORT_ERROR = None
+
+# noinspection PyUnresolvedReferences
+try:
+    from ansible_collections.dettonville.utils.plugins.module_utils.utils import (
+        PrettyLog,
+        get_collection_version,
+        UtilsModuleException,
+    )
+except ImportError as imp_exc:
+    UTILS_IMPORT_ERROR = imp_exc
+else:
+    UTILS_IMPORT_ERROR = None
 
 # _LOGLEVEL_DEFAULT = "INFO"
 _LOGLEVEL_DEFAULT = "DEBUG"
@@ -150,6 +165,22 @@ class GitInventoryUpdater:
         self.log.debug("%s kwargs=%s", log_prefix, PrettyLog(kwargs))
 
         self.collection_version = self.get_internal_collection_version()
+
+        if UTILS_IMPORT_ERROR:
+            # Needs: from ansible.module_utils.basic import
+            # missing_required_lib
+            raise_from(
+                MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.utils library is missing"),
+                UTILS_IMPORT_ERROR,
+            )
+
+        if GIT_ACTIONS_IMPORT_ERROR:
+            # Needs: from ansible.module_utils.basic import
+            # missing_required_lib
+            raise_from(
+                MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.git_actions library is missing"),
+                UTILS_IMPORT_ERROR,
+            )
 
         self.remove_repo_dir = remove_repo_dir
         self.test_mode = test_mode

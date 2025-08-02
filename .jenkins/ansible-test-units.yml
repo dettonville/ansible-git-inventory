@@ -1,12 +1,15 @@
 ---
 # .jenkins/ansible-test-units.yml
+debugVerbosity: "-v"
+# preTestCmd: >-
+#  export -p | sed 's/declare -x //' | sed 's/export //' &&
+preTestCmd: >-
+  ansible --version
 # testingType is automatically set to 'units' by runAnsibleTestUnits
 # testingType:
 #  - units
 testDeps:
   - dettonville.utils
-# preTestCmd: >-
-#  pip install -r requirements.txt
 strategy:
   fail-fast: false
   matrix:

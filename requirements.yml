@@ -1,0 +1,5 @@
+---
+
+collections:
+  - name: dettonville.utils
+    version: ">=2025.7.2"

@@ -215,7 +215,7 @@ AUTHOR: Lee Johnson (@lj020326)
 EXAMPLES:
 - name: Add hosts to inventory at hosts.yml
   dettonville.inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -246,7 +246,7 @@ EXAMPLES:
 
 - name: Add hosts with vars in host_vars files
   dettonville.git_inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007 - add hosts: admin01.qa.site1.example.int"
@@ -287,7 +287,7 @@ EXAMPLES:
 
 - name: Add hosts to hierarchical groups
   dettonville.git_inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -310,7 +310,7 @@ EXAMPLES:
 
 - name: Update hosts at hosts.yml
   dettonville.git_inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -353,7 +353,7 @@ EXAMPLES:
 
 - name: Overwrite hosts at hosts.yml
   dettonville.git_inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -397,7 +397,7 @@ EXAMPLES:
 
 - name: Remove hosts from inventory at hosts.yml
   dettonville.git_inventory.update_hosts:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:

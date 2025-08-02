@@ -25,7 +25,7 @@ jobs:
           - { python: "3.11", ansible: stable-2.19 }
           - { python: "3.12", ansible: stable-2.16 }
           - { python: "3.10", ansible: stable-2.16 }
-          - { python: "3.13", ansible: devel }
+#          - { python: "3.13", ansible: devel }
 
     steps:
       # Run sanity tests inside a Docker container.
@@ -40,15 +40,18 @@ jobs:
         # https://github.com/ansible-community/ansible-test-gh-action/blob/main/README.md
         uses: ansible-community/ansible-test-gh-action@release/v1
         with:
+#          args: '-vvv'
           ansible-core-version: ${{ matrix.versions.ansible }}
           target-python-version: ${{ matrix.versions.python }}
           testing-type: sanity
-          test-deps: >-
-            dettonville.utils
+#          test-deps: >-
+#            dettonville.utils
           pull-request-change-detection: false
           coverage: never # coverage is always very low for sanity tests, and doesn't make much sense
           pre-test-cmd: >-
-            ansible-test --version
+            ansible --version
+#          pre-test-cmd: >-
+#            export -p | sed 's/declare -x //' | sed 's/export //'
 
   # This job does nothing and is only used for the branch protection
   # or multi-stage CI jobs, like making sure that all tests pass before

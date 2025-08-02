@@ -1,11 +1,18 @@
 ---
 # .jenkins/ansible-test-sanity.yml
-
+debugVerbosity: "-v"
+# preTestCmd: >-
+#  pip install -r requirements.txt
+# preTestCmd: >-
+#  export -p | sed 's/declare -x //' | sed 's/export //'
+#  ansible-test --version
+preTestCmd: >-
+  ansible --version
 # testingType is automatically set to 'sanity' by runAnsibleTestSanity
 # testingType:
 #  - sanity
-# preTestCmd: >-
-#  pip install -r requirements.txt
+# testDeps:
+#  - dettonville.utils
 strategy:
   fail-fast: false
   matrix:

@@ -270,7 +270,7 @@ AUTHOR: Lee Johnson (@lj020326)
 EXAMPLES:
 - name: "Add groups with system_name and system_env using groups list method"
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -295,7 +295,7 @@ EXAMPLES:
 
 - name: "Add groups with system_name and system_env using children groups method"
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -317,7 +317,7 @@ EXAMPLES:
 
 - name: "Add `groups_vars` to inventory"
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -358,7 +358,7 @@ EXAMPLES:
 
 - name: Add groups to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -392,7 +392,7 @@ EXAMPLES:
 
 - name: Add and update groups with vars in group_vars files
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -405,7 +405,7 @@ EXAMPLES:
 
 - name: Add groups to hierarchical groups
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -445,7 +445,7 @@ EXAMPLES:
 
 - name: Update groups at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -482,7 +482,7 @@ EXAMPLES:
 
 - name: Overwrite groups at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -524,7 +524,7 @@ EXAMPLES:
 
 - name: Remove groups from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -535,7 +535,7 @@ EXAMPLES:
 
 - name: Add hosts to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -564,7 +564,7 @@ EXAMPLES:
 
 - name: Add hosts with vars in host_vars files
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007 - add hosts: admin01.qa.site1.example.int"
@@ -605,7 +605,7 @@ EXAMPLES:
 
 - name: Add hosts to hierarchical groups
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -628,7 +628,7 @@ EXAMPLES:
 
 - name: Update hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -671,7 +671,7 @@ EXAMPLES:
 
 - name: Overwrite hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -715,7 +715,7 @@ EXAMPLES:
 
 - name: Remove hosts from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -728,7 +728,7 @@ EXAMPLES:
 
 - name: Add groups and hosts to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -754,7 +754,7 @@ EXAMPLES:
 
 - name: Update groups and hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -784,7 +784,7 @@ EXAMPLES:
 
 - name: Overwrite groups and hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -835,7 +835,7 @@ EXAMPLES:
 
 - name: Remove groups and hosts from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@bitbucket.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:

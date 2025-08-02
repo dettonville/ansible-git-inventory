@@ -1,6 +1,6 @@
 ---
 
-- name: "runme | Run dettonville.git_inventory module tests"
+- name: "runme | Run module tests"
   hosts: localhost
   connection: local
   become: no

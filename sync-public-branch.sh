@@ -25,7 +25,6 @@ declare -a MIRROR_DIR_ARRAY
 MIRROR_DIR_ARRAY+=(".github")
 MIRROR_DIR_ARRAY+=(".jenkins")
 MIRROR_DIR_ARRAY+=("changelogs")
-MIRROR_DIR_ARRAY+=("collections")
 MIRROR_DIR_ARRAY+=("docs")
 MIRROR_DIR_ARRAY+=("files")
 MIRROR_DIR_ARRAY+=("meta")

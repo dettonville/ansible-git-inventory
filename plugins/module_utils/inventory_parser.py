@@ -40,7 +40,12 @@ from ansible.module_utils.six import string_types
 # from ansible.module_utils.basic import missing_required_lib
 
 # noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.utils.plugins.module_utils.utils import PrettyLog
+try:
+    from ansible_collections.dettonville.utils.plugins.module_utils.utils import PrettyLog
+except ImportError as imp_exc:
+    UTILS_IMPORT_ERROR = imp_exc
+else:
+    UTILS_IMPORT_ERROR = None
 
 # noinspection PyUnresolvedReferences
 # from ansible_collections.dettonville.utils.plugins.module_utils.deep_merge \

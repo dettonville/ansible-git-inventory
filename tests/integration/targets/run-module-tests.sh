@@ -22,6 +22,9 @@ SCRIPT_NAME_PREFIX="${SCRIPT_NAME%.*}"
 PLAYBOOK="${SCRIPT_NAME_PREFIX}.yml"
 PROJECT_DIR="$( cd "$SCRIPT_DIR/" && git rev-parse --show-toplevel )"
 
+## only needed if sourcing local private collections by source instead of galaxy
+## NEEDED when there is are updates/changes to the dependent collections
+## to be deployed along with the project repo update(s)
 #PROJECT_PARENT_DIR="${PROJECT_DIR}/.."
 PROJECT_PARENT_DIR=$(dirname "${PROJECT_DIR}")
 
@@ -47,10 +50,9 @@ echo "PROJECT_DIR=${PROJECT_DIR}"
 echo "VAULT_FILEPATH=${VAULT_FILEPATH}"
 echo "VAULT_ID=${VAULT_ID}"
 
-ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/collections/requirements.yml"
-#ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/collections/requirements.test.yml"
-
-echo "ANSIBLE_COLLECTION_REQUIREMENTS=${ANSIBLE_COLLECTION_REQUIREMENTS}"
+#ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/tests/requirements.yml"
+#ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/requirements.yml"
+ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/tests/integration/requirements.yml"
 
 export LOCAL_COLLECTIONS_PATH="${HOME}/.ansible"
 #export ANSIBLE_ROLES_PATH=./
@@ -78,6 +80,7 @@ function cleanup_tmpdir() {
 }
 
 function install_galaxy_collections() {
+  local _ANSIBLE_COLLECTION_REQUIREMENTS="${1}"
 
   echo "==> ansible-galaxy --version"
   ansible-galaxy --version
@@ -94,7 +97,7 @@ function install_galaxy_collections() {
   if [[ "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
     GALAXY_INSTALL_CMD+=("--upgrade")
   fi
-  GALAXY_INSTALL_CMD+=("-r ${ANSIBLE_COLLECTION_REQUIREMENTS}")
+  GALAXY_INSTALL_CMD+=("-r ${_ANSIBLE_COLLECTION_REQUIREMENTS}")
   GALAXY_INSTALL_CMD+=("-p ${LOCAL_COLLECTIONS_PATH}")
 
   echo "==> ${GALAXY_INSTALL_CMD[*]}"
@@ -102,26 +105,7 @@ function install_galaxy_collections() {
 
 }
 
-function main() {
-
-  ANSIBLE_ARGS=()
-  if [ $# -gt 0 ]; then
-    ANSIBLE_ARGS=("$@")
-  fi
-
-  rm -f ./ansible.log
-
-  ## ref: https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore
-  CERT_PATH=$(python -m certifi)
-  export SSL_CERT_FILE=${CERT_PATH}
-  export REQUESTS_CA_BUNDLE=${CERT_PATH}
-
-  if [[ "${INSTALL_GALAXY_COLLECTIONS}" -eq 1 || "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
-    install_galaxy_collections
-  fi
-
-  echo "==> ansible-galaxy collection list"
-  ansible-galaxy collection list
+function setup_collection_run_dir() {
 
   COLLECTION_NAMESPACE=$(yq -r '.namespace' "${PROJECT_DIR}/galaxy.yml")
   COLLECTION_NAME=$(yq -r '.name' "${PROJECT_DIR}/galaxy.yml")
@@ -141,6 +125,30 @@ function main() {
   ln -s "${PROJECT_DIR}" "${COLLECTION_SOURCE_DIR}"
   export ANSIBLE_COLLECTIONS_PATH="${COLLECTION_BASE_DIR}:${ANSIBLE_COLLECTIONS_PATH}"
   echo "ANSIBLE_COLLECTIONS_PATH=${ANSIBLE_COLLECTIONS_PATH}"
+
+}
+
+function main() {
+  ANSIBLE_ARGS=()
+  if [ $# -gt 0 ]; then
+    ANSIBLE_ARGS=("$@")
+  fi
+  echo "==> ANSIBLE_ARGS[*]=${ANSIBLE_ARGS[*]}"
+
+  rm -f ./ansible.log
+
+  ## ref: https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore
+  CERT_PATH=$(python -m certifi)
+  export SSL_CERT_FILE=${CERT_PATH}
+  export REQUESTS_CA_BUNDLE=${CERT_PATH}
+
+  if [[ "${INSTALL_GALAXY_COLLECTIONS}" -eq 1 || "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
+    install_galaxy_collections "${ANSIBLE_COLLECTION_REQUIREMENTS}"
+  fi
+  echo "==> ansible-galaxy collection list"
+  ansible-galaxy collection list
+
+  setup_collection_run_dir
 
   echo "==> ansible --version"
   ansible --version
