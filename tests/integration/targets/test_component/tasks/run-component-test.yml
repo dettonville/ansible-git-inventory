@@ -20,7 +20,7 @@
 
 - name: "{{ __test_component__log_component_test }} Display __test_component__test_vars_path"
   ansible.builtin.debug:
-    var: __test_component__test_case_dir
+    var: __test_component__test_vars_path
 
 - name: "{{ __test_component__log_component_test }} Set __test_component__test_case_group_dir"
   ansible.builtin.set_fact:

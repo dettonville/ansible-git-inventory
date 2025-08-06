@@ -207,11 +207,8 @@ class GitInventoryUpdater:
         }
 
         self.git = None
-        self.git_comment_prefix = None
-        self.git_comment_body = None
         self.git_comment_module_stamp = None
         self.git_commit_message = None
-        self.git_user_config = None
         self.git_repo_config = git_repo_config
 
         if self.git_repo_config:

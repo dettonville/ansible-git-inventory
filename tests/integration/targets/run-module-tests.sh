@@ -36,7 +36,7 @@ VAULT_FILEPATH="./../integration_config.vault.yml"
 #TEST_VARS_FILE="test-vars.yml"
 
 INSTALL_GALAXY_COLLECTIONS=1
-UPGRADE_GALAXY_COLLECTIONS=0
+UPGRADE_GALAXY_COLLECTIONS=1
 
 USE_SOURCE_COLLECTIONS=0
 SOURCE_COLLECTIONS_PATH="${PROJECT_PARENT_DIR}/requirements_collections"
@@ -96,6 +96,7 @@ function install_galaxy_collections() {
   GALAXY_INSTALL_CMD=("ansible-galaxy collection install")
   if [[ "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
     GALAXY_INSTALL_CMD+=("--upgrade")
+    GALAXY_INSTALL_CMD+=("--force")
   fi
   GALAXY_INSTALL_CMD+=("-r ${_ANSIBLE_COLLECTION_REQUIREMENTS}")
   GALAXY_INSTALL_CMD+=("-p ${LOCAL_COLLECTIONS_PATH}")

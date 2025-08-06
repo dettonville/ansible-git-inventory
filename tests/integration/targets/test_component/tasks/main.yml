@@ -61,7 +61,7 @@
 - name: "Display __test_component__test_var_files"
   ansible.builtin.debug:
     var: __test_component__test_var_files
-#    verbosity: 2
+    verbosity: 2
 
 - name: "Set __test_component__test_var_file_paths"
   ansible.builtin.set_fact:
