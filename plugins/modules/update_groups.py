@@ -616,7 +616,6 @@ def run_module():
         git_repo_config = {
             "repo_url": inventory_repo_url,
             "repo_branch": module.params.get("inventory_repo_branch"),
-            "remote": "origin",
             "ssh_params": module.params.get("ssh_params") or None,
             "user_name": git_user_name,
             "user_email": git_user_email,
@@ -633,7 +632,6 @@ def run_module():
             "group_list",
             "host_list",
             "inventory_file",
-            "state",
             "inventory_repo_url",
             "inventory_repo_branch",
             "ssh_params",  # These are handled in git_repo_config
@@ -641,7 +639,6 @@ def run_module():
     }
 
     group_list = module.params["group_list"]
-    state = module.params["state"]
 
     logging.debug("module.params => %s", pprint.pformat(module.params))
 
@@ -653,7 +650,7 @@ def run_module():
     )
 
     update_result = inventory_updater.update_inventory(
-        group_list=group_list, state=state
+        group_list=group_list
     )
 
     result.update(update_result)
