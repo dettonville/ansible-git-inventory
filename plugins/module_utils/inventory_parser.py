@@ -59,6 +59,8 @@ from ansible_collections.dettonville.git_inventory.plugins.module_utils.yaml_par
 _LOGLEVEL_DEFAULT = "INFO"
 
 _SYMLINK_SUBDIRS_DEFAULT = ["DEV", "PROD", "QA", "SANDBOX"]
+_SUPPORTED_UPDATE_STATES = ["merge", "overwrite", "absent"]
+_SUPPORTED_VARS_STATES = ["merge", "overwrite"]
 
 _CLASS_DEFAULT_VALUES = {
     "state": "merge",
@@ -302,8 +304,21 @@ class InventoryParser:
 
         self.inventory_file_dir = os.path.dirname(self.inventory_file_path)
         self.inventory_root_yaml_key = inventory_root_yaml_key
+
+        if state not in _SUPPORTED_UPDATE_STATES:
+            raise InventoryParserException(
+                "%s state [%s] not supported. Supported update states are %s"
+                % (log_prefix, state, _SUPPORTED_UPDATE_STATES)
+            )
         self.state = state
+
+        if vars_state not in _SUPPORTED_VARS_STATES:
+            raise InventoryParserException(
+                "%s vars_state [%s] not supported. Supported vars states are %s"
+                % (log_prefix, state, _SUPPORTED_VARS_STATES)
+            )
         self.vars_state = vars_state
+
         self.vars_overwrite_depth = vars_overwrite_depth
         self.remove_repo_dir = remove_repo_dir
         self.backup = backup
@@ -344,6 +359,7 @@ class InventoryParser:
         self.validate_inventory = validate_inventory
         self.test_mode = test_mode
 
+        self.log.debug("%s state => %s", log_prefix, state)
         self.log.debug("%s vars_state => %s", log_prefix, vars_state)
         self.log.debug(
             "%s vars_overwrite_depth => %s", log_prefix, vars_overwrite_depth
@@ -685,7 +701,6 @@ class InventoryParser:
 
         inventory_groupvars = self.yaml_parser.load_from_file(groupvars_filepath)
 
-        # if inventory_groupvars and self.state == 'merge':
         if bool(inventory_groupvars) and self.state == "merge":
             self.merge_dict_vars(inventory_groupvars, group_vars)
         else:

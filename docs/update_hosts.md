@@ -16,7 +16,7 @@ $ PROJECT_DIR="$( git rev-parse --show-toplevel )"
 $ cd ${PROJECT_DIR}
 $
 $ env ANSIBLE_NOCOLOR=True ansible-doc -t module dettonville.git_inventory.update_hosts | tee /Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory/docs/update_hosts.md
-> MODULE dettonville.git_inventory.update_hosts (/Users/ljohnson/tmp/_U5pQcn/ansible_collections/dettonville/git_inventory/plugins/modules/update_hosts.py)
+> MODULE dettonville.git_inventory.update_hosts (/Users/ljohnson/tmp/_pEZf38/ansible_collections/dettonville/git_inventory/plugins/modules/update_hosts.py)
 
   Ansible module to add, update, and/or remove host nodes to a
   specified YAML-file based inventory repository. If a

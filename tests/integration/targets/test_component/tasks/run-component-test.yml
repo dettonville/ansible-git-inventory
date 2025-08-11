@@ -152,6 +152,11 @@
       when: __test_data.reset_required|d(__test_component__data_reset_required)|d(True)|bool
       ansible.builtin.include_tasks: reset-test-data.yml
 
+#    - name: "{{ __test_component__log_component_test }} Init __test_component__test_case_args"
+#      ansible.builtin.set_fact:
+#        __test_component__test_case_args: ''
+#    #    __test_component__test_case_args: {}
+
     - name: "{{ __test_component__log_component_test }} Initialize __test_result_filtered_list"
       ansible.builtin.set_fact:
         __test_result_filtered_list: []

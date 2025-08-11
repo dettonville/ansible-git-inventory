@@ -197,6 +197,9 @@ class GitInventoryUpdater:
             "%s inventory_base_dir => %s", log_prefix, self.inventory_base_dir
         )
 
+        self.state = kwargs.get("state", "merge")
+        self.log.debug("%s state => %s", log_prefix, self.state)
+
         self.git_comment_prefix = kwargs.get("git_comment_prefix", "")
         self.git_comment_body = kwargs.get("git_comment_body", "")
         self.git_user_name = kwargs.get("git_user_name", "ansible")
@@ -320,7 +323,7 @@ class GitInventoryUpdater:
 
         return git_commit_message
 
-    def update_inventory(self, group_list=None, host_list=None, state="merge"):
+    def update_inventory(self, group_list=None, host_list=None):
         log_prefix = "%s.update_inventory():" % self.__class__.__name__
         # self.log.info("%s group => %s", log_prefix, PrettyLog(group))
 
@@ -345,17 +348,17 @@ class GitInventoryUpdater:
         if group_list:
             self.log.debug("%s group_list => %s", log_prefix, PrettyLog(group_list))
             for group in group_list:
-                if state in ["merge", "overwrite"]:
+                if self.state in ["merge", "overwrite"]:
                     self.inventory_parser.update_group(group)
-                if state == "absent":
+                if self.state == "absent":
                     self.inventory_parser.remove_group(group)
 
         if host_list:
             self.log.debug("%s host_list => %s", log_prefix, PrettyLog(host_list))
             for host in host_list:
-                if state in ["merge", "overwrite"]:
+                if self.state in ["merge", "overwrite"]:
                     self.inventory_parser.update_host(host)
-                if state == "absent":
+                if self.state == "absent":
                     self.inventory_parser.remove_host(host)
 
         self.log.debug("%s saving inventory", log_prefix)
@@ -377,7 +380,6 @@ class GitInventoryUpdater:
     def update_git_repo(self):
 
         log_prefix = "%s.update_git_repo():" % self.__class__.__name__
-        # self.log.info("%s group => %s", log_prefix, PrettyLog(group))
         result = dict(changed=False)
 
         self.log.info("%s updating git repository", log_prefix)

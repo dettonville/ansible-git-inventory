@@ -168,7 +168,7 @@
 #    var: __pip3_package_info
 
 - name: "init-test-vars | Set __test_component__pip_package_versions"
-#  no_log: true
+  no_log: true
   ansible.builtin.set_fact:
     __test_component__pip_package_versions: "{{ __test_component__pip_package_info.packages.pip3.values() | list |
         community.general.json_query('[].{name: name, version: version}') }}"
@@ -176,6 +176,7 @@
 - name: "init-test-vars | Display __test_component__pip_package_versions"
   ansible.builtin.debug:
     var: __test_component__pip_package_versions
+    verbosity: 1
 
 #- name: "init-test-vars | Setup temp dir"
 #  ansible.builtin.import_role:

@@ -3,7 +3,7 @@ authors:
   - Dettonville Development Team
   - Lee Johnson - ljohnson@dettonville.com
 dependencies:
-  dettonville.utils: ">=2025.7.30"
+  dettonville.utils: ">=2025.8.1"
 description: Add, update, and/or remove group and/or host nodes to a specified YAML-file based git inventory.
 issues: https://github.com/dettonville/ansible-git-inventory/issues
 license_file: LICENSE.md
@@ -16,7 +16,7 @@ tags:
   - utilities
   - git
   - inventory
-version: 2025.7.30
+version: 2025.8.1
 # https://docs.ansible.com/ansible/devel/dev_guide/developing_collections_distributing.html#ignoring-files-and-folders
 manifest:
   directives:

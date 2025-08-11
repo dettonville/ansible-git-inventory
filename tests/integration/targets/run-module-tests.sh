@@ -37,6 +37,7 @@ VAULT_FILEPATH="./../integration_config.vault.yml"
 
 INSTALL_GALAXY_COLLECTIONS=1
 UPGRADE_GALAXY_COLLECTIONS=1
+RESET_GALAXY_CACHE=1
 
 USE_SOURCE_COLLECTIONS=0
 SOURCE_COLLECTIONS_PATH="${PROJECT_PARENT_DIR}/requirements_collections"
@@ -54,7 +55,8 @@ echo "VAULT_ID=${VAULT_ID}"
 #ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/requirements.yml"
 ANSIBLE_COLLECTION_REQUIREMENTS="${PROJECT_DIR}/tests/integration/requirements.yml"
 
-export LOCAL_COLLECTIONS_PATH="${HOME}/.ansible"
+export LOCAL_COLLECTIONS_PATH="${HOME}/.ansible/collections"
+#export LOCAL_COLLECTIONS_PATH="${HOME}/.ansible"
 #export ANSIBLE_ROLES_PATH=./
 #export ANSIBLE_COLLECTIONS_PATH="${LOCAL_COLLECTIONS_PATH}:${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections"
 #export ANSIBLE_COLLECTIONS_PATH="${PROJECT_DIR}/collections:${PROJECT_PARENT_DIR}/requirements_collections"
@@ -79,6 +81,28 @@ function cleanup_tmpdir() {
   test "${KEEP_TEMP_DIR:-0}" = 1 || rm -rf "${TEMP_DIR}"
 }
 
+function execute_eval_command() {
+  local RUN_COMMAND="${*}"
+
+  echo "${RUN_COMMAND}"
+  COMMAND_RESULT=$(eval "${RUN_COMMAND}")
+#  COMMAND_RESULT=$(eval "${RUN_COMMAND} > /dev/null 2>&1")
+  local RETURN_STATUS=$?
+
+  if [[ $RETURN_STATUS -eq 0 ]]; then
+    if [[ $COMMAND_RESULT != "" ]]; then
+      echo "${COMMAND_RESULT}"
+    fi
+    echo "SUCCESS!"
+  else
+    echo "ERROR (${RETURN_STATUS})"
+#    echo "${COMMAND_RESULT}"
+    echo "Failed during: %s" "${COMMAND_RESULT}"
+    exit 1
+  fi
+
+}
+
 function install_galaxy_collections() {
   local _ANSIBLE_COLLECTION_REQUIREMENTS="${1}"
 
@@ -93,6 +117,12 @@ function install_galaxy_collections() {
 #  GALAXY_INSTALL_CMD+=("--ignore-certs")
 #  GALAXY_INSTALL_CMD+=("--force")
 
+  if [[ "${RESET_GALAXY_CACHE}" -eq 1 ]]; then
+    jq '.' ~/.ansible/galaxy_cache/api.json > ~/.ansible/galaxy_cache/api.orig.json
+    jq '.["galaxy.ansible.com:"] |= with_entries(if .key | startswith("/api/v3/collections/dettonville/") then empty else . end)' \
+      ~/.ansible/galaxy_cache/api.orig.json > ~/.ansible/galaxy_cache/api.json
+  fi
+
   GALAXY_INSTALL_CMD=("ansible-galaxy collection install")
   if [[ "${UPGRADE_GALAXY_COLLECTIONS}" -eq 1 ]]; then
     GALAXY_INSTALL_CMD+=("--upgrade")
@@ -102,8 +132,8 @@ function install_galaxy_collections() {
   GALAXY_INSTALL_CMD+=("-p ${LOCAL_COLLECTIONS_PATH}")
 
   echo "==> ${GALAXY_INSTALL_CMD[*]}"
-  eval "${GALAXY_INSTALL_CMD[*]}"
-
+#  eval "${GALAXY_INSTALL_CMD[*]}"
+  execute_eval_command "${GALAXY_INSTALL_CMD[*]}"
 }
 
 function setup_collection_run_dir() {

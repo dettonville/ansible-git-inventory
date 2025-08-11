@@ -338,7 +338,7 @@
     label: "{{ item.name }}"
 
 - name: "{{ __test_component__log_process_test_results }} Set __test_case_results"
-#  no_log: true
+  no_log: true
   ansible.builtin.set_fact:
     __test_case_results: "{{ __test_case_results
       | combine(__test_case_assertion_results, recursive=True) }}"

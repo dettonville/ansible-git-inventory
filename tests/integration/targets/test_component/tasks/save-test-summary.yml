@@ -155,6 +155,7 @@
         verbosity: 1
 
     - name: "{{ __test_component__log_save_test_summary }} Set __test_component__summary_results_detailed"
+      no_log: true
       ansible.builtin.set_fact:
         __test_component__summary_results_detailed: |
           {% set _test_run_components = {} %}

@@ -7,7 +7,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import sys
 import tempfile
 import shutil
 import pprint
@@ -264,8 +263,6 @@ class TestGitInventoryUpdater(ModuleTestCase):
 
         # Write sample inventory to file
         with open(self.inventory_file_path, "w") as f:
-            import yaml
-
             yaml.dump(self.sample_inventory, f)
 
         self.inventory_updater = GitInventoryUpdater(
@@ -386,10 +383,17 @@ class TestGitInventoryUpdater(ModuleTestCase):
     @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
     def test_remove_host_update(self, mock_git_class):
         """Test removing a host from inventory."""
+        inventory_updater = GitInventoryUpdater(
+            self.mock_module,
+            inventory_file=self.inventory_file,
+            inventory_base_dir=self.inventory_base_dir,
+            state="absent",
+        )
+
         host_list = [{"host_name": "host1"}]
 
-        result = self.inventory_updater.update_inventory(
-            host_list=host_list, state="absent"
+        result = inventory_updater.update_inventory(
+            host_list=host_list
         )
         print("result=%s" % result)
 
@@ -459,7 +463,6 @@ class TestInventoryParser(ModuleTestCase):
 
         # Write sample inventory to file
         with open(self.inventory_file_path, "w") as f:
-            import yaml
             yaml.dump(self.sample_inventory, f)
 
     def tearDown(self):
@@ -510,7 +513,6 @@ class TestInventoryParser(ModuleTestCase):
         invalid_file = os.path.join(self.test_dir, "invalid_inventory.yml")
 
         with open(invalid_file, "w") as f:
-            import yaml
             yaml.dump(invalid_inventory, f)
 
         with self.assertRaises(InventoryParserException):
@@ -577,7 +579,6 @@ class TestInventoryParser(ModuleTestCase):
         }
 
         with open(self.inventory_file_path, "w") as f:
-            import yaml
             yaml.dump(inventory_with_group_vars, f)
 
         parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
@@ -592,14 +593,5 @@ class TestInventoryParser(ModuleTestCase):
 
 
 if __name__ == "__main__":
-    # Import required modules
-    try:
-        import yaml
-    except ImportError:
-        print(
-            "PyYAML is required for these tests. Please install it with: pip install PyYAML"
-        )
-        sys.exit(1)
-
     # Run tests
     unittest.main(verbosity=2)
