@@ -871,10 +871,12 @@ class InventoryParser:
                 group_name,
                 self.global_groups_file,
             )
-            raise InventoryParserException(
-                "%s group_name=[%s] not found in %s"
-                % (log_prefix, group_name, self.global_groups_file)
-            )
+            self.module.fail_json(msg="%s group_name=[%s] not found in %s" %
+                                  (log_prefix, group_name, self.global_groups_file))
+            # raise InventoryParserException(
+            #     "%s group_name=[%s] not found in %s"
+            #     % (log_prefix, group_name, self.global_groups_file)
+            # )
 
     def add_group_to_parent_group(
         self, inventory_node, group, parent_group, group_children=None

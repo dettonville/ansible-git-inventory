@@ -25,7 +25,7 @@ test_start_data:
 test_expected:
   changed: False
   failed: True
-  msg: "GitInventoryUpdater.validate_global_group_exists.* group_name=.* not found in xenv_groups.yml"
+  msg: "InventoryParser.validate_global_group_exists.* group_name=.* not found in xenv_groups.yml"
 
 host_list:
   - host_name: test123.prod.site1.example.int

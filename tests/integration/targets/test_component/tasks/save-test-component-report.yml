@@ -17,7 +17,7 @@
 #  when: not __test_data.test_expected.failed|d(False)|bool
   ansible.builtin.copy:
     content: "{{ {'test_results': __test_case_results} | to_nice_yaml(indent=2) }}"
-    dest: "{{ __test_component__test_base_dir }}/{{ 
+    dest: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_dir }}/{{ __test_component__report_results_file }}"
     mode: "0644"
 
@@ -25,7 +25,7 @@
     __test_component__test_file_results_dir }}/{{ __test_component__report_results_detailed_file }}"
   ansible.builtin.copy:
     content: "{{ {'test_results': __test_case_results_detailed} | to_nice_yaml(indent=2) }}"
-    dest: "{{ __test_component__test_base_dir }}/{{ 
+    dest: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_dir }}/{{ __test_component__report_results_detailed_file }}"
     mode: "0644"
 
@@ -33,7 +33,7 @@
     __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }} exists"
   no_log: true
   ansible.builtin.stat:
-    path: "{{ __test_component__test_base_dir }}/{{ 
+    path: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }}"
   register: file_result
 
@@ -46,7 +46,7 @@
         __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }}"
       no_log: true
       ansible.builtin.slurp:
-        src: "{{ __test_component__test_base_dir }}/{{ 
+        src: "{{ __test_component__test_base_path }}/{{ 
           __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }}"
       register: test_report_content
 
@@ -100,7 +100,7 @@
     __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }} exists"
   no_log: true
   ansible.builtin.stat:
-    path: "{{ __test_component__test_base_dir }}/{{ 
+    path: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }}"
   register: file_detailed_result
 
@@ -114,7 +114,7 @@
         __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }}"
       no_log: true
       ansible.builtin.slurp:
-        src: "{{ __test_component__test_base_dir }}/{{ 
+        src: "{{ __test_component__test_base_path }}/{{ 
           __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }}"
       register: test_report_content_detailed
 
@@ -246,7 +246,7 @@
     __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }}"
   ansible.builtin.copy:
     content: "{{ {'test_results': __test_component__report_results} | to_nice_yaml(indent=2) }}"
-    dest: "{{ __test_component__test_base_dir }}/{{ 
+    dest: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_file }}"
     mode: "0644"
 
@@ -254,7 +254,7 @@
     __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }}"
   ansible.builtin.copy:
     content: "{{ {'test_results': __test_component__report_results_detailed} | to_nice_yaml(indent=2) }}"
-    dest: "{{ __test_component__test_base_dir }}/{{ 
+    dest: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_detailed_file }}"
     mode: "0644"
 
@@ -263,7 +263,7 @@
   ignore_errors: true
   dettonville.utils.export_dicts:
     export_list: "{{ __test_component__report_results_flattened | dettonville.utils.sort_dict_list('test_case_id') }}"
-    file: "{{ __test_component__test_base_dir }}/{{ 
+    file: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_csv }}"
     format: "csv"
 
@@ -272,13 +272,13 @@
   ignore_errors: true
   dettonville.utils.export_dicts:
     export_list: "{{ __test_component__report_results_flattened | dettonville.utils.sort_dict_list('test_case_id') }}"
-    file: "{{ __test_component__test_base_dir }}/{{ 
+    file: "{{ __test_component__test_base_path }}/{{ 
       __test_component__test_file_results_base_dir }}/{{ __test_component__report_results_md }}"
     format: "md"
 
 - name: "{{ __test_component__log_save_component_report }} Save component README.md to {{ 
-    __test_component__test_base_dir }}/{{ __test_component__test_file_results_base_dir }}/README.md"
+    __test_component__test_base_path }}/{{ __test_component__test_file_results_base_dir }}/README.md"
   ansible.builtin.template:
     src: "readme-component-results.md.j2"
-    dest: "{{ __test_component__test_base_dir }}/{{ __test_component__test_file_results_base_dir }}/README.md"
+    dest: "{{ __test_component__test_base_path }}/{{ __test_component__test_file_results_base_dir }}/README.md"
     mode: "0644"

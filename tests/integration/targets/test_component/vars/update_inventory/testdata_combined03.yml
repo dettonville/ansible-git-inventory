@@ -51,7 +51,7 @@ host_list:
       provisioning_data:
         service_domains:
           - webapp101.qa.example.int
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_medium
       - rhel7
@@ -64,7 +64,7 @@ host_list:
       provisioning_data:
         service_domains:
           - webapp102.qa.example.int
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_small
       - rhel7

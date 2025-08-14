@@ -72,7 +72,7 @@
 #    verbosity: 1
     msg:
       - "__test_component__base_dir={{ __test_component__base_dir }}"
-      - "__test_component__test_base_dir={{ __test_component__test_base_dir }}"
+      - "__test_component__test_base_path={{ __test_component__test_base_path }}"
 #      - "__test_component__test_run_base_dir={{ __test_component__test_run_base_dir }}"
       - "__test_component__run_dir={{ __test_component__run_dir }}"
       - "__test_component__component_dir={{ __test_component__component_dir }}"

@@ -325,7 +325,6 @@ class GitInventoryUpdater:
 
     def update_inventory(self, group_list=None, host_list=None):
         log_prefix = "%s.update_inventory():" % self.__class__.__name__
-        # self.log.info("%s group => %s", log_prefix, PrettyLog(group))
 
         result = dict(
             changed=False,
@@ -402,7 +401,8 @@ class GitInventoryUpdater:
             result["message"] = "Inventory updated successfully"
             result["changed"] = True
         else:
-            result["message"] = "No changes required for inventory"
+            result['message'] = "No changes required for {0}".format(self.inventory_file)
+            # result["message"] = "No changes required for inventory"
             result["changed"] = False
 
         if self.remove_repo_dir:

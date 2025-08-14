@@ -36,7 +36,7 @@ host_list:
         service_domains:
           - webapp101.qa.example.int
           - webapp101.qa.site1.example.int
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_small
       - ntp_client
@@ -48,7 +48,7 @@ host_list:
       provisioning_data:
         service_domains:
           - webapp102.qa.example.int
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_small
       - ntp_client

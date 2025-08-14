@@ -14,7 +14,7 @@ host_list:
   - host_name: vmlnx123.qa.site1.example.int
     host_vars:
       provisioning_data:
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_medium
       - ntp_client
@@ -22,7 +22,7 @@ host_list:
   - host_name: vmlnx124.qa.site1.example.int
     host_vars:
       provisioning_data:
-        infra_group: AIM
+        infra_group: INFRA
     parent_groups:
       - vmware_flavor_medium
       - ntp_client

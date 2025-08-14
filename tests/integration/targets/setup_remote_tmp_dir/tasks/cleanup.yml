@@ -1,3 +1,4 @@
+---
 - name: Delete temporary directory
   no_log: true
   ansible.builtin.file:
