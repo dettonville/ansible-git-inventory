@@ -4,9 +4,9 @@
 ## Running the tests directly
 
 ```shell
-ansible-test units --python 3.12 update_inventory
-ansible-test units --docker -v --python 3.12 update_inventory
-ansible-test units --docker -v --python 3.12 update_hosts
+ansible-test units --python 3.13 update_inventory
+ansible-test units --docker -v --python 3.13 update_inventory
+ansible-test units --docker -v --python 3.13 update_hosts
 ```
 
 ```shell
@@ -59,7 +59,7 @@ log_file_date_format=%Y-%m-%d %H:%M:%S
 
 
 ```shell
-ansible-test units --docker -v --python 3.12
+ansible-test units --docker -v --python 3.13
 ```
 
 ```shell
@@ -69,8 +69,8 @@ pytest -r a -n auto --color yes -p no:cacheprovider \
   tests/unit/plugins/modules/test_update_inventory.py
 
 pytest -r a -n auto --color yes -p no:cacheprovider \
-  -c /Users/ljohnson/.pyenv/versions/3.12.3/lib/python3.12/site-packages/ansible_test/_data/pytest/config/default.ini \
-  --junit-xml /Users/ljohnson/repos/ansible/ansible_collections/dettonville/utils/tests/output/junit/python3.12-modules-units.xml \
+  -c /Users/ljohnson/.pyenv/versions/3.13.3/lib/python3.13/site-packages/ansible_test/_data/pytest/config/default.ini \
+  --junit-xml /Users/ljohnson/repos/ansible/ansible_collections/dettonville/utils/tests/output/junit/python3.13-modules-units.xml \
   --strict-markers \
   --rootdir /Users/ljohnson/repos/ansible/ansible_collections/dettonville/utils \
   --confcutdir /Users/ljohnson/repos/ansible/ansible_collections/dettonville/utils \

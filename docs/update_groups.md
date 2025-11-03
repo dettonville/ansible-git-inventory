@@ -2,21 +2,21 @@
 
 ```shell
 $ ansible --version
-ansible [core 2.18.4]
-  config file = /Users/ljohnson/repos/ansible/ansible_collections/dettonville.utils/ansible.cfg
+ansible [core 2.19.2]
+  config file = None
   configured module search path = [/Users/ljohnson/.ansible/plugins/modules, /usr/share/ansible/plugins/modules]
-  ansible python module location = /Users/ljohnson/.pyenv/versions/3.12.3/lib/python3.12/site-packages/ansible
-  ansible collection location = /Users/ljohnson/.ansible/collections:/usr/share/ansible/collections:/Users/ljohnson/repos/ansible/ansible_collections/dettonville.utils/collections
-  executable location = /Users/ljohnson/.pyenv/versions/3.12.3/bin/ansible
-  python version = 3.12.3 (main, Oct 16 2024, 14:24:42) [Clang 15.0.0 (clang-1500.0.40.1)] (/Users/ljohnson/.pyenv/versions/3.12.3/bin/python3.12)
-  jinja version = 3.1.4
-  libyaml = True
+  ansible python module location = /Users/ljohnson/.pyenv/versions/3.13.5/lib/python3.13/site-packages/ansible
+  ansible collection location = /Users/ljohnson/.ansible/collections:/usr/share/ansible/collections
+  executable location = /Users/ljohnson/.pyenv/versions/3.13.5/bin/ansible
+  python version = 3.13.5 (main, Sep 18 2025, 19:11:35) [Clang 16.0.0 (clang-1600.0.26.6)] (/Users/ljohnson/.pyenv/versions/3.13.5/bin/python3.13)
+  jinja version = 3.1.6
+  pyyaml version = 6.0.2 (with libyaml v0.2.5)
 $
-$ PROJECT_DIR="$( git rev-parse --show-toplevel )"
-$ cd ${PROJECT_DIR}
+$ REPO_DIR="$( git rev-parse --show-toplevel )"
+$ cd ${REPO_DIR}
 $
 $ env ANSIBLE_NOCOLOR=True ansible-doc -t module dettonville.git_inventory.update_groups | tee /Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory/docs/update_groups.md
-> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_pEZf38/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
+> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_zRcNud/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
 
   Ansible module to add, update, and/or remove group nodes to a
   specified YAML-file based inventory repository. If a
@@ -32,15 +32,16 @@ OPTIONS (= indicates it is required):
         default: false
         type: bool
 
-- backup  Create a backup inventory file including the timestamp information
-           so you can get the original inventory file back if you
-           somehow clobbered it incorrectly. This option is should not
-           be necessary since the file can be rolled back to a prior
-           commit using git.
+- backup  Create a backup inventory file including the timestamp
+           information so you can get the original inventory file back
+           if you somehow clobbered it incorrectly. This option is
+           should not be necessary since the file can be rolled back
+           to a prior commit using git.
         default: false
         type: bool
 
-- create_empty_groupvars_files  Creates empty vars files ('group_vars/' or 'host_vars/') for
+- create_empty_groupvars_files  Creates empty vars files
+                                 ('group_vars/' or 'host_vars/') for
                                  group/host vars even when no vars
                                  specified.
                                  Only used if the `use_vars_files` is
@@ -48,15 +49,19 @@ OPTIONS (= indicates it is required):
         default: true
         type: bool
 
-- create_parent_groupvar_files  Creates empty groupvar files ('group_vars/') for parent groups even
-                                 when no vars specified.
+- create_parent_groupvar_files  Creates empty groupvar files
+                                 ('group_vars/') for parent groups
+                                 even when no vars specified.
                                  Only used if the `use_vars_files` or
                                  `create_empty_groupvars_files` is
                                  enabled (default).
         default: true
         type: bool
 
-- enable_groupvar_symlinks_for_child_inventories  Enables `group_vars` symlinks for child inventories.
+- enable_groupvar_symlinks_for_child_inventories  Enables
+                                                   `group_vars`
+                                                   symlinks for child
+                                                   inventories.
                                                    Only used if the
                                                    `use_vars_files` is
                                                    enabled.
@@ -69,7 +74,9 @@ OPTIONS (= indicates it is required):
         default: true
         type: bool
 
-- enforce_global_groups_must_already_exist  Validate host groups exist already in the specified
+- enforce_global_groups_must_already_exist  Validate host groups
+                                             exist already in the
+                                             specified
                                              global_groups_file before
                                              allowing hosts to be
                                              added.
@@ -92,17 +99,19 @@ OPTIONS (= indicates it is required):
         default: null
         type: str
 
-- git_user_email  Explicit git local email address. Nice to have for remote
-                   operations.
+- git_user_email  Explicit git local email address. Nice to have for
+                   remote operations.
         default: ansible@example.org
         type: str
 
-- git_user_name  Explicit git local user name. Nice to have for remote operations.
+- git_user_name  Explicit git local user name. Nice to have for
+                  remote operations.
         default: ansible
         type: str
 
-- global_groups_file  File path to global groups YAML file relative to repo directory root
-                       or parameter `inventory_dir` if defined/set.
+- global_groups_file  File path to global groups YAML file relative
+                       to repo directory root or parameter
+                       `inventory_dir` if defined/set.
                        The inventory file must be YAML formatted.
                        E.g., `global_groups.yml`,
                        `test_inventory/xenv_groups.yml`,
@@ -114,19 +123,20 @@ OPTIONS (= indicates it is required):
         default: xenv_groups.yml
         type: path
 
-= group_list  Specifies a list of group dicts. The required key within the group
-               item is 'group_name'. The supported keys within the
-               group item dict are 'group_vars', 'parent_groups' and
-               'groups'. The 'parent_groups'/'groups' value is used to
-               specify parent groups and may either be a list of group
-               name strings or nested dicts where each key represents
-               a group name.
+= group_list  Specifies a list of group dicts. The required key
+               within the group item is 'group_name'. The supported
+               keys within the group item dict are 'group_vars',
+               'parent_groups' and 'groups'. The
+               'parent_groups'/'groups' value is used to specify
+               parent groups and may either be a list of group name
+               strings or nested dicts where each key represents a
+               group name.
         aliases: [groups]
         elements: dict
         type: list
 
-- inventory_base_dir  Path to base directory where the inventory git repository will be
-                       cloned.
+- inventory_base_dir  Path to base directory where the inventory git
+                       repository will be cloned.
                        If not specified, a temporary directory is
                        created in order to clone the inventory git
                        repo.
@@ -139,8 +149,9 @@ OPTIONS (= indicates it is required):
         default: null
         type: path
 
-- inventory_dir  Relative path to inventory directory where inventory YAML files are
-                  located relative to repo directory root.
+- inventory_dir  Relative path to inventory directory where inventory
+                  YAML files are located relative to repo directory
+                  root.
                   If not specified, the `inventory_dir` is derived
                   from the implied relative path of `inventory_file`.
                   E.g., `test_inventory/child_inventory`,
@@ -149,8 +160,9 @@ OPTIONS (= indicates it is required):
         default: null
         type: path
 
-= inventory_file  File path to inventory hosts YAML file relative to repo directory
-                   root or parameter `inventory_dir` if defined/set.
+= inventory_file  File path to inventory hosts YAML file relative to
+                   repo directory root or parameter `inventory_dir` if
+                   defined/set.
                    The inventory file must be YAML formatted.
                    E.g., `test_inventory/child_inventory/hosts.yml`,
                    `inventory/SANDBOX/hosts.yml`, etc.
@@ -164,16 +176,19 @@ OPTIONS (= indicates it is required):
         default: null
         type: str
 
-- inventory_root_yaml_key  Inventory root node key in yaml. E.g., 'all'
+- inventory_root_yaml_key  Inventory root node key in yaml. E.g.,
+                            'all'
         default: all
         type: str
 
-- logging_level  Parameter used to define the level of troubleshooting output.
+- logging_level  Parameter used to define the level of
+                  troubleshooting output.
         choices: [NOTSET, DEBUG, INFO, ERROR]
         default: INFO
         type: str
 
-- remove_repo_dir  Remove temporary repo inventory directory after completing.
+- remove_repo_dir  Remove temporary repo inventory directory after
+                    completing.
         default: true
         type: bool
 
@@ -182,20 +197,21 @@ OPTIONS (= indicates it is required):
         type: dict
         suboptions:
 
-        - accept_hostkey          If `yes', ensure that "-o StrictHostKeyChecking=no" is
-                           present as an ssh option.
+        - accept_hostkey  If `yes', ensure that "-o
+                           StrictHostKeyChecking=no" is present as an
+                           ssh option.
           default: false
           type: bool
 
-        - key_file          Specify an optional private key file path, on the target
-                     host, to use for the checkout.
+        - key_file  Specify an optional private key file path, on the
+                     target host, to use for the checkout.
           default: null
           type: path
 
-        - ssh_opts          Creates a wrapper script and exports the path as GIT_SSH
-                     which git then automatically uses to override ssh
-                     arguments. An example value could be "-o
-                     StrictHostKeyChecking=no" (although this
+        - ssh_opts  Creates a wrapper script and exports the path as
+                     GIT_SSH which git then automatically uses to
+                     override ssh arguments. An example value could be
+                     "-o StrictHostKeyChecking=no" (although this
                      particular option is better set via
                      `accept_hostkey').
           default: null
@@ -220,13 +236,13 @@ OPTIONS (= indicates it is required):
         default: false
         type: bool
 
-- use_vars_files  Use vars files ('group_vars/') for group vars instead of inline
-                   group_vars.
+- use_vars_files  Use vars files ('group_vars/') for group vars
+                   instead of inline group_vars.
         default: true
         type: bool
 
-- vars_overwrite_depth  if vars_state='overwrite' is used, the depth at which variable
-                         overwrites will begin.
+- vars_overwrite_depth  if vars_state='overwrite' is used, the depth
+                         at which variable overwrites will begin.
         default: 2
         type: int
 
@@ -526,7 +542,8 @@ RETURN VALUES:
         returned: always
         type: bool
 
-- inventory_base_dir  The path of the inventory repo directory that was updated
+- inventory_base_dir  The path of the inventory repo directory that
+                       was updated
         returned: when remove_repo_dir=false
         sample: /tmp/path/to/git_inventory_repo
         type: str

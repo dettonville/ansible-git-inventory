@@ -22,7 +22,6 @@ import inspect
 from typing import Type, TypeVar
 
 from ansible.module_utils.common.text.converters import to_text
-from ansible.module_utils.six import raise_from
 
 # noinspection PyUnresolvedReferences
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
@@ -169,18 +168,12 @@ class GitInventoryUpdater:
         if UTILS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise_from(
-                MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.utils library is missing"),
-                UTILS_IMPORT_ERROR,
-            )
+            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.utils library is missing") from UTILS_IMPORT_ERROR
 
         if GIT_ACTIONS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise_from(
-                MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.git_actions library is missing"),
-                UTILS_IMPORT_ERROR,
-            )
+            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.git_actions library is missing") from UTILS_IMPORT_ERROR
 
         self.remove_repo_dir = remove_repo_dir
         self.test_mode = test_mode

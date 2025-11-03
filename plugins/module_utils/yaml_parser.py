@@ -20,7 +20,6 @@ import logging
 
 # from ansible.errors import AnsibleError
 # from ansible.module_utils.basic import missing_required_lib
-from ansible.module_utils.six import raise_from
 
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
     MissingLibError,
@@ -207,10 +206,7 @@ class RuamelYamlParser(GitInventoryParser):
         if YAML_RUAMEL_LIB_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise_from(
-                MissingLibError("ruamel.yaml", "python ruamel.yaml library is missing"),
-                YAML_RUAMEL_LIB_IMPORT_ERROR,
-            )
+            raise MissingLibError("ruamel.yaml", "python ruamel.yaml library is missing") from YAML_RUAMEL_LIB_IMPORT_ERROR
 
         self.yaml = YAML()
         # self.yaml = YAML(typ='rt')
@@ -912,9 +908,7 @@ class PyYamlParser(GitInventoryParser):
         if YAML_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise_from(
-                MissingLibError("pyyaml", "python pyyaml library is missing"), YAML_IMPORT_ERROR
-            )
+            raise MissingLibError("pyyaml", "python pyyaml library is missing") from YAML_IMPORT_ERROR
 
         self.yaml_parser_type = "PyYaml"
         # self.yaml_config = yaml_config or CONFIG_YAML_DEFAULT

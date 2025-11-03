@@ -35,7 +35,6 @@ else:
 
 
 from ansible.module_utils.common.text.converters import to_text
-from ansible.module_utils.six import string_types
 
 # from ansible.module_utils.basic import missing_required_lib
 
@@ -834,7 +833,7 @@ class InventoryParser:
 
         if isinstance(parent_groups, list):
             for parent_group in parent_groups:
-                if isinstance(parent_group, string_types):
+                if isinstance(parent_group, str):
                     if parent_group:
                         self.add_group_to_parent_group(
                             self.inventory, group, parent_group
@@ -1076,7 +1075,7 @@ class InventoryParser:
 
         if isinstance(parent_groups, list):
             for parent_group in parent_groups:
-                if isinstance(parent_group, string_types):
+                if isinstance(parent_group, str):
                     if parent_group:
                         self.add_host_to_group_children(
                             self.inventory, host, parent_group
