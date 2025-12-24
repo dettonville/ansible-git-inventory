@@ -21,6 +21,7 @@ jobs:
         versions:
           # Testing all ansible and python versions is impractical. Only test the newest and
           # oldest versions of each that we support
+          - { python: "3.13", ansible: stable-2.20 }
           - { python: "3.13", ansible: stable-2.19 }
           - { python: "3.11", ansible: stable-2.19 }
           - { python: "3.12", ansible: stable-2.16 }
@@ -49,9 +50,7 @@ jobs:
           pull-request-change-detection: false
           coverage: never # coverage is always very low for sanity tests, and doesn't make much sense
           pre-test-cmd: >-
-            ansible --version
-#          pre-test-cmd: >-
-#            export -p | sed 's/declare -x //' | sed 's/export //'
+            ansible-test --version
 
   # This job does nothing and is only used for the branch protection
   # or multi-stage CI jobs, like making sure that all tests pass before
