@@ -1,7 +1,3 @@
-
-[![ansible-test sanity](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-sanity.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-sanity.yml)
-[![ansible-test units](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-units.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-test-units.yml)
-[![ansible-lint](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/ansible-lint.yml)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 
 # Dettonville Ansible Git Inventory Collection
@@ -9,6 +5,12 @@
 The Ansible ``dettonville.git_inventory`` collection includes 3 modules (update_inventory, update_groups, and update_hosts) support adding, updating, and/or removing host and group nodes and respective variable values for a specified YAML-based inventory.
 
 The modules can be integrated to establish Git for a "configuration-as-code" approach to Ansible inventory management.
+
+## CI Status
+
+[![CI](https://github.com/dettonville/ansible-git-inventory/actions/workflows/all_green_publish.yml/badge.svg?branch=main)](https://github.com/dettonville/ansible-git-inventory/actions/workflows/all_green_publish.yml)
+
+## Usage Overview
 
 The features supported by the git_inventory modules are especially helpful when integrating an ansible YAML based inventory into a host and/or application provisioning workflow scheme as highlighted in the following graph. 
 

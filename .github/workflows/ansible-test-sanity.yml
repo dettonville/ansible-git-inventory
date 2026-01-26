@@ -1,13 +1,12 @@
 ---
 name: Ansible Test Sanity
+permissions:
+  contents: read
+  checks: write
 
 on:
   workflow_call:  # allow this workflow to be called from other workflows
   workflow_dispatch:  # allow this workflow to be called from user
-  # Schedule run (once daily)
-  schedule:
-    ## Daily Docker Image Rebuild (10:29am daily)
-    - cron: '29 10 * * *'
 
 jobs:
   ansible_test_sanity:
@@ -21,6 +20,7 @@ jobs:
         versions:
           # Testing all ansible and python versions is impractical. Only test the newest and
           # oldest versions of each that we support
+#          - { python: "3.14", ansible: stable-2.20 }
           - { python: "3.13", ansible: stable-2.20 }
           - { python: "3.13", ansible: stable-2.19 }
           - { python: "3.11", ansible: stable-2.19 }
@@ -51,6 +51,13 @@ jobs:
           coverage: never # coverage is always very low for sanity tests, and doesn't make much sense
           pre-test-cmd: >-
             ansible-test --version
+
+      - name: Publish Unit Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            ansible_collections/dettonville/git_inventory/tests/output/junit/*.xml
 
   # This job does nothing and is only used for the branch protection
   # or multi-stage CI jobs, like making sure that all tests pass before
