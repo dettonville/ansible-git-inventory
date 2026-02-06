@@ -12,8 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 on: # yamllint disable-line rule:truthy
-  # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
+  # Allows manual triggering
   workflow_dispatch:
+  # Run CI against all pushes (direct commits, also merged PRs), Pull Requests
   push:
     branches:
       - main
