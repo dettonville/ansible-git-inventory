@@ -1,6 +1,6 @@
 ---
 
-__test_component__ansible_python_version: "{{ ansible_python_version.split('.')[0] }}"
+__test_component__ansible_python_version: "{{ ansible_facts.python_version.split('.')[0] }}"
 
 __test_component__type_default: module
 __test_component__type: "{{ test_component__type | d(__test_component__type_default) }}"
@@ -151,7 +151,13 @@ __test_component__git_ssh_params:
   accept_hostkey: true
   key_file: "{{ __test_component__git_ssh_private_keyfile }}"
 
-__test_component__test_base_path: "{{ test_component__test_base_path }}"
+__test_component__tmpdir_default: "{{ ansible_facts['env'].HOME }}/.ansible/tmp"
+__test_component__tmpdir: "{{ test_component__tmpdir | d(__test_component__tmpdir_default) }}"
+
+__test_component__test_base_path_default: "{{ __test_component__tmpdir }}/test.{{ __test_component__collection }}"
+__test_component__test_base_path: "{{ test_component__test_base_path
+  | d(__test_component__test_base_path_default) }}"
+
 #__test_component__test_run_base_dir_default: "{{ __test_component__test_base_path }}"
 #__test_component__test_run_base_dir: "{{ test_component__test_run_base_dir
 #  | d(__test_component__test_run_base_dir_default) }}"
@@ -250,17 +256,17 @@ __test_component__runtime_info:
   ansible_version: "{{ ansible_version | d('') }}"
   ansible_python_interpreter: "{{ ansible_python_interpreter | d('') }}"
   discovered_interpreter_python: "{{ discovered_interpreter_python | d('') }}"
-  ansible_python_version: "{{ ansible_python_version | d('') }}"
+  ansible_python_version: "{{ ansible_facts.python_version | d('') }}"
   ansible_connection: "{{ ansible_connection | d('') }}"
-  ansible_os_family: "{{ ansible_os_family | d('') }}"
-  ansible_distribution: "{{ ansible_distribution | d('') }}"
-  ansible_distribution_release: "{{ ansible_distribution_release | d('') }}"
-  ansible_distribution_version: "{{ ansible_distribution_version | d('') }}"
+  ansible_os_family: "{{ ansible_facts.os_family | d('') }}"
+  ansible_distribution: "{{ ansible_facts.distribution | d('') }}"
+  ansible_distribution_release: "{{ ansible_facts.distribution_release | d('') }}"
+  ansible_distribution_version: "{{ ansible_facts.distribution_version | d('') }}"
   ansible_user: "{{ ansible_user | d('') }}"
   ansible_host: "{{ ansible_host }}"
-  ansible_hostname: "{{ ansible_hostname }}"
-  ansible_nodename: "{{ ansible_nodename }}"
-#  ansible_controller_vars: "{{ vars | dict2items | selectattr('key', 'match', '^tower.*') | list | items2dict }}"
+  ansible_hostname: "{{ ansible_facts.hostname }}"
+  ansible_nodename: "{{ ansible_facts.nodename }}"
+#  ansible_controller_vars: "{{ ansible_facts | dict2items | selectattr('key', 'match', '^tower.*') | list | items2dict }}"
 
 __test_python_version: "python{{ ansible_python_version.split('.')[0] }}"
 __test_component__noop_messages:
