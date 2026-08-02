@@ -1,6 +1,5 @@
 name: dettonville.git_inventory Collection Config
 version: 1.0.0
-schema: v1
 
 rules:
   - "This is the dettonville.git_inventory Ansible Collection — maintain high code quality, test coverage, and collection best practices"

@@ -7,49 +7,38 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import tempfile
-import shutil
 import pprint
-import yaml
-
+import shutil
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-from ansible_collections.dettonville.git_inventory.tests.unit.plugins.modules.utils import (
-    set_module_args,
-    AnsibleExitJson,
-    AnsibleFailJson,
-    ModuleTestCase,
-)
+import yaml
 
-from ansible_collections.dettonville.git_inventory.plugins.modules import (
-    update_inventory,
-)
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.git_inventory_updater import (
     GitInventoryUpdater,
 )
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
     InventoryParser,
-    InventoryParserException
+    InventoryParserException,
 )
-
-# from ansible_collections.dettonville.git_inventory.plugins.module_utils.yaml_parser import (
-#     get_yaml_parser,
-# )
-
-MODULES_IMPORT_PATH = "ansible_collections.dettonville.git_inventory.plugins.modules"
-MODULE_UTILS_IMPORT_PATH = (
-    "ansible_collections.dettonville.git_inventory.plugins.module_utils"
+from ansible_collections.dettonville.git_inventory.plugins.modules import (
+    update_inventory,
+)
+from ansible_collections.dettonville.git_inventory.tests.unit.plugins.modules.utils import (
+    MODULE_UTILS_IMPORT_PATH,
+    MODULES_IMPORT_PATH,
+    AnsibleExitJson,
+    AnsibleFailJson,
+    ModuleTestCase,
+    make_absolute,
+    set_module_args,
 )
 
 UTILS_MODULES_IMPORT_PATH = "ansible_collections.dettonville.utils.plugins.modules"
 UTILS_MODULE_UTILS_IMPORT_PATH = (
     "ansible_collections.dettonville.utils.plugins.module_utils"
 )
-
-
-def make_absolute(base_path, name):
-    return ".".join([base_path, name])
 
 
 class TestUpdateInventoryModule(ModuleTestCase):
@@ -392,9 +381,7 @@ class TestGitInventoryUpdater(ModuleTestCase):
 
         host_list = [{"host_name": "host1"}]
 
-        result = inventory_updater.update_inventory(
-            host_list=host_list
-        )
+        result = inventory_updater.update_inventory(host_list=host_list)
         print("result=%s" % result)
 
         self.assertTrue(result)
@@ -472,12 +459,16 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_initialization(self):
         """Test InventoryParser initialization."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
         self.assertEqual(parser.inventory_file, self.inventory_file)
 
     def test_parse_inventory_success(self):
         """Test successful inventory parsing."""
-        result = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file).get_inventory_root()
+        result = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        ).get_inventory_root()
         print("result =>", pprint.pformat(result))
 
         self.assertIsInstance(result, dict)
@@ -489,7 +480,9 @@ class TestInventoryParser(ModuleTestCase):
         """Test inventory parsing with missing file."""
         non_existent_file = os.path.join(self.test_dir, "missing.yml")
         with self.assertRaises(InventoryParserException):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, non_existent_file)
+            parser = InventoryParser(
+                self.mock_module, self.inventory_base_dir, non_existent_file
+            )
 
     def test_parse_inventory_invalid_yaml(self):
         """Test inventory parsing with invalid YAML."""
@@ -498,11 +491,15 @@ class TestInventoryParser(ModuleTestCase):
             f.write("invalid: yaml: content: [")
 
         with self.assertRaises(yaml.YAMLError):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, invalid_yaml_file)
+            parser = InventoryParser(
+                self.mock_module, self.inventory_base_dir, invalid_yaml_file
+            )
 
     def test_validate_inventory_success(self):
         """Test successful inventory validation."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         result = parser.validate_inventory_yamllint(strict_mode=True)
         self.assertTrue(result)
@@ -516,11 +513,15 @@ class TestInventoryParser(ModuleTestCase):
             yaml.dump(invalid_inventory, f)
 
         with self.assertRaises(InventoryParserException):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, invalid_file)
+            parser = InventoryParser(
+                self.mock_module, self.inventory_base_dir, invalid_file
+            )
 
     def test_get_hosts(self):
         """Test getting all hosts from inventory."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -533,7 +534,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_groups(self):
         """Test getting all groups from inventory."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -545,7 +548,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_hosts_in_group(self):
         """Test getting hosts in a specific group."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -559,7 +564,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_host_vars(self):
         """Test getting variables for a specific host."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -581,7 +588,9 @@ class TestInventoryParser(ModuleTestCase):
         with open(self.inventory_file_path, "w") as f:
             yaml.dump(inventory_with_group_vars, f)
 
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))

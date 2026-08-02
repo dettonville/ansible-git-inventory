@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, annotations
+from __future__ import absolute_import, annotations, division, print_function
 
 __metaclass__ = type
 
@@ -10,17 +10,15 @@ The class supports two yaml libraries (PyYAML and RuamelYaml) that preserving an
 
 """
 
-from collections import OrderedDict
-from abc import ABC, ABCMeta, abstractmethod
-from typing import Any, Dict, Optional, Union
-from dataclasses import dataclass
-
-from pathlib import Path
 import logging
+from abc import ABC, ABCMeta, abstractmethod
+from collections import OrderedDict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
 # from ansible.errors import AnsibleError
 # from ansible.module_utils.basic import missing_required_lib
-
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
     MissingLibError,
 )
@@ -34,10 +32,9 @@ from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors i
 # https://docs.ansible.com/ansible-core/devel/dev_guide/testing/sanity/import.html#import
 try:
     from ruamel.yaml import YAML
-    from ruamel.yaml.comments import CommentedMap, CommentedSeq
+    from ruamel.yaml.comments import CommentedMap, CommentedSeq, merge_attrib
     from ruamel.yaml.error import CommentMark
     from ruamel.yaml.tokens import CommentToken
-    from ruamel.yaml.comments import merge_attrib
 except ImportError as imp_exc:
     YAML_RUAMEL_LIB_IMPORT_ERROR = imp_exc
 else:
@@ -199,14 +196,15 @@ class GitInventoryParser(ABC, metaclass=GitInventoryParserMeta):
 # ref:
 # https://stackoverflow.com/questions/47382227/python-yaml-update-preserving-order-and-comments
 class RuamelYamlParser(GitInventoryParser):
-
     def __init__(self, yaml_config=None):
         # ref:
         # https://docs.ansible.com/ansible-core/devel/dev_guide/testing/sanity/import.html#import
         if YAML_RUAMEL_LIB_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "python ruamel.yaml library is missing") from YAML_RUAMEL_LIB_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml", "python ruamel.yaml library is missing"
+            ) from YAML_RUAMEL_LIB_IMPORT_ERROR
 
         self.yaml = YAML()
         # self.yaml = YAML(typ='rt')
@@ -908,7 +906,9 @@ class PyYamlParser(GitInventoryParser):
         if YAML_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("pyyaml", "python pyyaml library is missing") from YAML_IMPORT_ERROR
+            raise MissingLibError(
+                "pyyaml", "python pyyaml library is missing"
+            ) from YAML_IMPORT_ERROR
 
         self.yaml_parser_type = "PyYaml"
         # self.yaml_config = yaml_config or CONFIG_YAML_DEFAULT

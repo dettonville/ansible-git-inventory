@@ -15,26 +15,29 @@ Module utility class that:
 
 """
 
+import inspect
 import logging
 import shutil
 import tempfile
-import inspect
 from typing import Type, TypeVar
 
 from ansible.module_utils.common.text.converters import to_text
 
-# noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
-    InventoryParser,
-)
 # noinspection PyUnresolvedReferences
 from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
     MissingLibError,
 )
 
 # noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
+    InventoryParser,
+)
+
+# noinspection PyUnresolvedReferences
 try:
-    from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import Git
+    from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import (
+        Git,
+    )
 except ImportError as imp_exc:
     GIT_ACTIONS_IMPORT_ERROR = imp_exc
 else:
@@ -44,8 +47,8 @@ else:
 try:
     from ansible_collections.dettonville.utils.plugins.module_utils.utils import (
         PrettyLog,
-        get_collection_version,
         UtilsModuleException,
+        get_collection_version,
     )
 except ImportError as imp_exc:
     UTILS_IMPORT_ERROR = imp_exc
@@ -132,7 +135,6 @@ def class_init_wrapper(cls: Type[T], *args, **kwargs) -> T:
 
 
 class GitInventoryUpdater:
-
     def __init__(
         self,
         module,
@@ -142,7 +144,6 @@ class GitInventoryUpdater:
         remove_repo_dir=True,
         **kwargs,
     ):
-
         self.module = module
         if hasattr(module, "_name"):
             # if '_name' in module:
@@ -168,12 +169,18 @@ class GitInventoryUpdater:
         if UTILS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.utils library is missing") from UTILS_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml",
+                "dettonville.utils.plugins.module_utils.utils library is missing",
+            ) from UTILS_IMPORT_ERROR
 
         if GIT_ACTIONS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.git_actions library is missing") from UTILS_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml",
+                "dettonville.utils.plugins.module_utils.git_actions library is missing",
+            ) from UTILS_IMPORT_ERROR
 
         self.remove_repo_dir = remove_repo_dir
         self.test_mode = test_mode
@@ -238,9 +245,7 @@ class GitInventoryUpdater:
 
         collection_version = None
         try:
-            collection_version = get_collection_version(
-                module_fqcn, no_version=None
-            )
+            collection_version = get_collection_version(module_fqcn, no_version=None)
             self.log.debug("%s collection_version=%s", log_prefix, collection_version)
         except UtilsModuleException as e:
             pass
@@ -296,7 +301,6 @@ class GitInventoryUpdater:
         return
 
     def get_commit_message(self):
-
         git_commit_message_default = "%s: updated inventory" % (
             self.git_comment_module_stamp
         )
@@ -370,7 +374,6 @@ class GitInventoryUpdater:
         return result
 
     def update_git_repo(self):
-
         log_prefix = "%s.update_git_repo():" % self.__class__.__name__
         result = dict(changed=False)
 
@@ -394,7 +397,9 @@ class GitInventoryUpdater:
             result["message"] = "Inventory updated successfully"
             result["changed"] = True
         else:
-            result['message'] = "No changes required for {0}".format(self.inventory_file)
+            result['message'] = "No changes required for {0}".format(
+                self.inventory_file
+            )
             # result["message"] = "No changes required for inventory"
             result["changed"] = False
 

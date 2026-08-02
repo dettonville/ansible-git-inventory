@@ -2,31 +2,39 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import contextlib
+import json
 import os
 import shutil
-import json
 import tempfile
-import contextlib
-import pytest
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
+import pytest
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 
 TEST_MODULES_IMPORT_PATH = "dettonville.git_inventory"
+MODULES_IMPORT_PATH = "ansible_collections.dettonville.git_inventory.plugins.modules"
+MODULE_UTILS_IMPORT_PATH = "ansible_collections.dettonville.git_inventory.plugins.module_utils"
+
+
+def make_absolute(base_path, name):
+    return ".".join([base_path, name])
 
 
 class AnsibleExitJson(Exception):
     """Exception class to be raised by module.exit_json and caught by the test case"""
 
-    pass
+    def __init__(self, kwargs):
+        self.kwargs = kwargs
 
 
 class AnsibleFailJson(Exception):
     """Exception class to be raised by module.fail_json and caught by the test case"""
 
-    pass
+    def __init__(self, kwargs):
+        self.kwargs = kwargs
 
 
 def exit_json(*args, **kwargs):

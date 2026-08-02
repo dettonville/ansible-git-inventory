@@ -93,8 +93,15 @@ winansd3s4.example.int | SUCCESS => {
 
 ```
 
-
 ### Run module tests
+
+Directly using integration test playbook:
+```shell
+$ run-playbook.sh -i localhost, -c local test_export_dicts.yml
+## or simply:
+$ run-playbook.sh test_export_dicts.yml
+$ run-playbook.sh test_debug_sanitized_playbook.yml
+```
 
 ```shell
 $ PROJECT_DIR="$( git rev-parse --show-toplevel )"

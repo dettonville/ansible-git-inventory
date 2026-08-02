@@ -2,7 +2,7 @@
 
 ```shell
 $ ansible --version
-ansible [core 2.19.2]
+ansible [core 2.20.1]
   config file = None
   configured module search path = [/Users/ljohnson/.ansible/plugins/modules, /usr/share/ansible/plugins/modules]
   ansible python module location = /Users/ljohnson/.pyenv/versions/3.13.5/lib/python3.13/site-packages/ansible
@@ -16,7 +16,7 @@ $ REPO_DIR="$( git rev-parse --show-toplevel )"
 $ cd ${REPO_DIR}
 $
 $ env ANSIBLE_NOCOLOR=True ansible-doc -t module dettonville.git_inventory.update_groups | tee /Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory/docs/update_groups.md
-> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_zRcNud/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
+> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_bOOZYc/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
 
   Ansible module to add, update, and/or remove group nodes to a
   specified YAML-file based inventory repository. If a

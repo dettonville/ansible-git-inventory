@@ -14,20 +14,20 @@ to specified YAML file components in the inventory.
 
 """
 
+import copy
+import errno
+import logging
 import os
 import sys
-import logging
 import tempfile
 import traceback
-import errno
-import copy
 
 # # ref: https://github.com/adrienverge/yamllint/blob/master/tests/test_linter.py
 # ref: https://github.com/adrienverge/yamllint/issues/112
 
 try:
-    from yamllint.config import YamlLintConfig
     from yamllint import linter as yaml_linter
+    from yamllint.config import YamlLintConfig
 except ImportError as imp_exc:
     YAMLLINT_IMPORT_ERROR = imp_exc
 else:
@@ -40,7 +40,9 @@ from ansible.module_utils.common.text.converters import to_text
 
 # noinspection PyUnresolvedReferences
 try:
-    from ansible_collections.dettonville.utils.plugins.module_utils.utils import PrettyLog
+    from ansible_collections.dettonville.utils.plugins.module_utils.utils import (
+        PrettyLog,
+    )
 except ImportError as imp_exc:
     UTILS_IMPORT_ERROR = imp_exc
 else:
@@ -213,7 +215,6 @@ class InventoryParserException(Exception):
 
 
 class InventoryParser:
-
     def __init__(
         self,
         module,
@@ -255,7 +256,6 @@ class InventoryParser:
         test_mode=_CLASS_DEFAULT_VALUES["test_mode"],
         logging_level=_CLASS_DEFAULT_VALUES["logging_level"],
     ):
-
         self.module = module
 
         log_prefix = "%s.init():" % self.__class__.__name__
@@ -564,7 +564,9 @@ class InventoryParser:
 
         if YAMLLINT_IMPORT_ERROR:
             if strict_mode:
-                raise InventoryParserException("{}: missing required yamllint library".format(log_prefix))
+                raise InventoryParserException(
+                    "{}: missing required yamllint library".format(log_prefix)
+                )
             else:
                 self.log.warning(
                     "%s missing yamllint - linting will be skipped", log_prefix
@@ -870,8 +872,10 @@ class InventoryParser:
                 group_name,
                 self.global_groups_file,
             )
-            self.module.fail_json(msg="%s group_name=[%s] not found in %s" %
-                                  (log_prefix, group_name, self.global_groups_file))
+            self.module.fail_json(
+                msg="%s group_name=[%s] not found in %s"
+                % (log_prefix, group_name, self.global_groups_file)
+            )
             # raise InventoryParserException(
             #     "%s group_name=[%s] not found in %s"
             #     % (log_prefix, group_name, self.global_groups_file)

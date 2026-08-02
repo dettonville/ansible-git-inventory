@@ -910,7 +910,6 @@ module_args = dict(
 
 # ref: https://docs.ansible.com/ansible/latest/dev_guide/testing_units_modules.html#restructuring-modules-to-enable-testing-module-set-up-and-other-processes
 def setup_module_object():
-
     required_one_of = [
         ["group_list", "host_list"],
     ]
@@ -992,7 +991,7 @@ def run_module():
         module=module,
         inventory_file=inventory_file,
         git_repo_config=git_repo_config,
-        **updater_kwargs
+        **updater_kwargs,
     )
 
     update_result = inventory_updater.update_inventory(
