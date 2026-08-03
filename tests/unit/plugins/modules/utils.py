@@ -2,31 +2,45 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import contextlib
+import json
 import os
 import shutil
-import json
 import tempfile
-import contextlib
-import pytest
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
+import pytest
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 
 TEST_MODULES_IMPORT_PATH = "dettonville.git_inventory"
+MODULES_IMPORT_PATH = (
+    "ansible_collections.dettonville.git_inventory.plugins.modules"
+)
+MODULE_UTILS_IMPORT_PATH = (
+    "ansible_collections.dettonville.git_inventory.plugins.module_utils"
+)
+
+
+def make_absolute(base_path, name):
+    return ".".join([base_path, name])
 
 
 class AnsibleExitJson(Exception):
-    """Exception class to be raised by module.exit_json and caught by the test case"""
+    """Exception class to be raised by module.exit_json and caught by the
+    test case"""
 
-    pass
+    def __init__(self, kwargs):
+        self.kwargs = kwargs
 
 
 class AnsibleFailJson(Exception):
-    """Exception class to be raised by module.fail_json and caught by the test case"""
+    """Exception class to be raised by module.fail_json and caught by
+    the test case"""
 
-    pass
+    def __init__(self, kwargs):
+        self.kwargs = kwargs
 
 
 def exit_json(*args, **kwargs):
@@ -97,7 +111,8 @@ def set_module_args(args):
 
 # # --- Mock AnsibleModule for testing ---
 # # This class simulates the AnsibleModule provided by Ansible's core.
-# # It captures calls to exit_json and fail_json, and allows mocking run_command.
+# # It captures calls to exit_json and fail_json, and allows mocking
+# # run_command.
 # class MockAnsibleModule:
 #     def __init__(self, argument_spec, supports_check_mode=False, **kwargs):
 #         self.argument_spec = argument_spec
@@ -156,7 +171,8 @@ def set_module_args(args):
 #
 #     def atomic_move(self, src, dest):
 #         """Simulates AnsibleModule.atomic_move."""
-#         # For testing purposes, just simulate a successful move if source exists
+#         # For testing purposes, just simulate a successful move if
+#         # source exists
 #         if os.path.exists(src):
 #             os.rename(src, dest)
 #             return True
@@ -171,7 +187,9 @@ def set_module_args(args):
 # This class simulates the AnsibleModule provided by Ansible's core.
 # It captures calls to exit_json and fail_json, and allows mocking run_command.
 class MockAnsibleModule:
-    def __init__(self, argument_spec=None, supports_check_mode=False, **kwargs):
+    def __init__(
+        self, argument_spec=None, supports_check_mode=False, **kwargs
+    ):
         self.argument_spec = argument_spec
         self.supports_check_mode = supports_check_mode
         self.params = kwargs.get("params", {})
@@ -181,11 +199,12 @@ class MockAnsibleModule:
         self.exit_json = Mock()
         self.fail_json = Mock()
         self.bin_path_map = {}  # Used to mock get_bin_path
-        self.tmpdir = tempfile.mkdtemp()  # Simulate temporary directory for module
+        self.tmpdir = (
+            tempfile.mkdtemp()
+        )  # Simulate temporary directory for module
         self.add_cleanup_action = MagicMock()  # Mock cleanup action
-        self._name = (
-            "dettonville.git_inventory.update_inventory"  # Simulate module name
-        )
+        # Simulate module name
+        self._name = "dettonville.git_inventory.update_inventory"
 
     def set_params(self, **params):
         self.params = params
@@ -221,10 +240,12 @@ class ModuleTestCase(unittest.TestCase):
     """
     Provides some infrastructure for using unittest.TestCase.
 
-    Note that unittest.TestCase is not the recommended way of writing Ansible unit tests, but there
-    still are a lot of existing tests in this form.
+    Note that unittest.TestCase is not the recommended way of writing
+    Ansible unit tests, but there still are a lot of existing tests
+    in this form.
     """
 
+    # noinspection PyPep8Naming
     def setUp(self):
         self.mock_module = patch.multiple(
             basic.AnsibleModule, exit_json=exit_json, fail_json=fail_json

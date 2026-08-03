@@ -1,51 +1,60 @@
-from __future__ import absolute_import, division, print_function, annotations
+from __future__ import absolute_import, annotations, division, print_function
 
 __metaclass__ = type
 
 """
+Module utility class to configure the appropriate YAML parser and settings
+to enabled loading and dumping YAML files.
 
-Module utility class to configure the appropriate YAML parser and settings to enabled loading and dumping YAML files.
-
-The class supports two yaml libraries (PyYAML and RuamelYaml) that preserving annotated inventory files.
-
+The class supports two yaml libraries (PyYAML and RuamelYaml) that preserving
+annotated inventory files.
 """
 
-from collections import OrderedDict
-from abc import ABC, ABCMeta, abstractmethod
-from typing import Any, Dict, Optional, Union
-from dataclasses import dataclass
-
-from pathlib import Path
 import logging
+from abc import ABC, ABCMeta, abstractmethod
+from collections import OrderedDict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
 # from ansible.errors import AnsibleError
 # from ansible.module_utils.basic import missing_required_lib
-
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
+# noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (  # noqa: E501
     MissingLibError,
 )
 
 # noinspection PyUnresolvedReferences
-# from ansible_collections.dettonville.utils.plugins.module_utils.utils import PrettyLog
+# from ansible_collections.dettonville.utils.plugins.module_utils.utils
+#   import PrettyLog
 
 # ref: https://stackoverflow.com/questions/47382227/python-yaml-update-preserving-order-and-comments
 # ref: https://github.com/ansible/ansible/issues/74383#issuecomment-824884558
 # ref:
 # https://docs.ansible.com/ansible-core/devel/dev_guide/testing/sanity/import.html#import
 try:
+    # noinspection PyUnresolvedReferences
     from ruamel.yaml import YAML
-    from ruamel.yaml.comments import CommentedMap, CommentedSeq
+
+    # noinspection PyUnresolvedReferences
+    from ruamel.yaml.comments import CommentedMap, CommentedSeq, merge_attrib
+
+    # noinspection PyUnresolvedReferences
     from ruamel.yaml.error import CommentMark
+
+    # noinspection PyUnresolvedReferences
     from ruamel.yaml.tokens import CommentToken
-    from ruamel.yaml.comments import merge_attrib
 except ImportError as imp_exc:
+    YAML = CommentedMap = CommentedSeq = merge_attrib = None
     YAML_RUAMEL_LIB_IMPORT_ERROR = imp_exc
 else:
     YAML_RUAMEL_LIB_IMPORT_ERROR = None
 
 try:
+    # noinspection PyPackageRequirements
     import yaml
 except ImportError as imp_exc:
+    yaml = None
     YAML_IMPORT_ERROR = imp_exc
 else:
     YAML_IMPORT_ERROR = None
@@ -78,7 +87,8 @@ log = logging.getLogger()
 # MINIMUM_PYTHON_VERSION_UNION_TYPE_SUPPORT = (3, 10)
 #
 #
-# # Verify if the current Python version is higher than MINIMUM_PYTHON_VERSION_UNION_TYPE_SUPPORT
+# # Verify if the current Python version is higher than
+# # MINIMUM_PYTHON_VERSION_UNION_TYPE_SUPPORT
 # def python_version_match_requirement_union_type():
 #     return sys.version_info >= MINIMUM_PYTHON_VERSION_UNION_TYPE_SUPPORT
 
@@ -88,11 +98,12 @@ class Comments:
     """Helper class for comments.
 
     It provides possibility to handle comments in the same way
-    for map and sequence items. It doesn't depend whether it
+    for map and sequence items. It doesn't depend on if it is a
     CommentToken or list of CommentToken.
     """
 
-    # solved python 3.9 typeerror issue with addition of `from __future__ import annotations`
+    # solved python 3.9 typeerror issue with addition
+    # of `from __future__ import annotations`
     # ref: https://github.com/tiangolo/typer/issues/371
     before: list[CommentToken] | None = None
     inline: list[CommentToken] | None = None
@@ -125,7 +136,9 @@ class GitInventoryParser(ABC, metaclass=GitInventoryParserMeta):
     must follow, ensuring consistent behavior across different YAML libraries.
     """
 
-    def __init__(self, yaml_lib: str, yaml_config: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self, yaml_lib: str, yaml_config: Optional[Dict[str, Any]] = None
+    ):
         """
         Initialize the parser with optional configuration.
 
@@ -199,20 +212,23 @@ class GitInventoryParser(ABC, metaclass=GitInventoryParserMeta):
 # ref:
 # https://stackoverflow.com/questions/47382227/python-yaml-update-preserving-order-and-comments
 class RuamelYamlParser(GitInventoryParser):
-
     def __init__(self, yaml_config=None):
         # ref:
         # https://docs.ansible.com/ansible-core/devel/dev_guide/testing/sanity/import.html#import
         if YAML_RUAMEL_LIB_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "python ruamel.yaml library is missing") from YAML_RUAMEL_LIB_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml", "python ruamel.yaml library is missing"
+            ) from YAML_RUAMEL_LIB_IMPORT_ERROR
 
         self.yaml = YAML()
         # self.yaml = YAML(typ='rt')
         # self.yaml = YAML(typ='full')
         self.yaml_parser_type = "RuamelYaml"
-        super().__init__(yaml_lib=self.yaml_parser_type, yaml_config=yaml_config)
+        super().__init__(
+            yaml_lib=self.yaml_parser_type, yaml_config=yaml_config
+        )
 
         # Configure Ruamel.YAML based on provided config
         if "preserve_quotes" in self.yaml_config:
@@ -220,11 +236,14 @@ class RuamelYamlParser(GitInventoryParser):
         if "width" in self.yaml_config:
             self.yaml.width = self.yaml_config["width"]
         if "allow_duplicate_keys" in self.yaml_config:
-            self.yaml.allow_duplicate_keys = self.yaml_config["allow_duplicate_keys"]
+            self.yaml.allow_duplicate_keys = self.yaml_config[
+                "allow_duplicate_keys"
+            ]
         if "explicit_start" in self.yaml_config:
             self.yaml.explicit_start = self.yaml_config["explicit_start"]
         # if "indent" in self.yaml_config:
-        #     self.yaml.indent(mapping=self.yaml_config['indent'], sequence=self.yaml_config['indent'])
+        #     self.yaml.indent(mapping=self.yaml_config['indent'],
+        #       sequence=self.yaml_config['indent'])
 
         self.yaml.indent(
             mapping=self.yaml_config["mapping"],
@@ -249,7 +268,8 @@ class RuamelYamlParser(GitInventoryParser):
         # self.yaml.representer.add_representer(self.my_represent_none)
 
         # # Default to safe loading
-        # self.yaml.default_flow_style = config.get('default_flow_style', False)
+        # self.yaml.default_flow_style = config.get('default_flow_style',
+        #   False)
 
     def __str__(self):
         return "RuamelYamlParser(yaml_config=%s)" % self.yaml_config
@@ -269,7 +289,7 @@ class RuamelYamlParser(GitInventoryParser):
                 yaml_content = yaml_content.decode("utf-8")
             return self.yaml.load(StringIO(yaml_content))
         except Exception as e:
-            raise yaml.YAMLError(f"Ruamel.YAML parsing error: {e}")
+            raise yaml.YAMLError(f"Ruamel.YAML parsing error: {e}") from e
 
     def load_from_file(self, file_path: Union[str, Path]) -> Union[dict, list]:
         """Load YAML content from file using Ruamel.YAML."""
@@ -277,12 +297,13 @@ class RuamelYamlParser(GitInventoryParser):
             # with open(file_path, "r", encoding="utf-8") as file:
             with open(file_path) as file:
                 return self.yaml.load(file)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"YAML file not found: {file_path}")
+        except FileNotFoundError as e:
+            raise FileNotFoundError(f"YAML file not found: {file_path}") from e
         except Exception as e:
-            raise yaml.YAMLError(f"Ruamel.YAML file parsing error: {e}")
+            raise yaml.YAMLError(f"Ruamel.YAML file parsing error: {e}") from e
 
-    # def load_from_file(self, file_path: Union[str, Path]) -> Union[dict, list]:
+    # def load_from_file(
+    #   self, file_path: Union[str, Path]) -> Union[dict, list]:
     #     # ref: https://www.programcreek.com/python/example/103799/ruamel.yaml.load
     #     # ref:
     #     # https://stackoverflow.com/questions/36969808/can-i-insert-a-line-into-ruamel-yamls-commentedmap#36970608
@@ -290,20 +311,23 @@ class RuamelYamlParser(GitInventoryParser):
     #         data = self.yaml.load(file)
     #     return data
 
-    def dump(self, data: Any) -> str:
-        """Serialize data to YAML string using Ruamel.YAML."""
+    # ref: https://pyyaml.org/wiki/PyYAMLDocumentation
+    def dump(self, data: Any, stream: Optional[Any] = None) -> Optional[str]:
+        """Serialize data to YAML string or write to stream using
+        Ruamel.YAML."""
         try:
+            if stream is not None:
+                return self.yaml.dump(data, stream)
+
             from io import StringIO
 
-            stream = StringIO()
-            self.yaml.dump(data, stream)
-            return stream.getvalue()
+            stream_io = StringIO()
+            self.yaml.dump(data, stream_io)
+            return stream_io.getvalue()
         except Exception as e:
-            raise yaml.YAMLError(f"Ruamel.YAML serialization error: {e}")
-
-    # ref: https://pyyaml.org/wiki/PyYAMLDocumentation
-    def dump(self, data, stream):
-        return self.yaml.dump(data, stream)
+            raise yaml.YAMLError(
+                f"Ruamel.YAML serialization error: {e}"
+            ) from e
 
     def dump_to_file(self, data: Any, file_path: str) -> None:
         """Write data to YAML file using Ruamel.YAML."""
@@ -312,9 +336,11 @@ class RuamelYamlParser(GitInventoryParser):
                 self.yaml.dump(data, file)
         except Exception as e:
             if "No such file or directory" in str(e):
-                raise IOError(f"Error writing to file {file_path}: {e}")
+                raise IOError(f"Error writing to file {file_path}: {e}") from e
             else:
-                raise yaml.YAMLError(f"Ruamel.YAML file serialization error: {e}")
+                raise yaml.YAMLError(
+                    f"Ruamel.YAML file serialization error: {e}"
+                ) from e
 
     ########################################
     # handle commented maps/dictionaries
@@ -322,9 +348,10 @@ class RuamelYamlParser(GitInventoryParser):
     # https://stackoverflow.com/questions/62953548/how-to-recursively-sort-yaml-with-anchors-using-commentedmap
     @staticmethod
     def recursive_sort_v2(obj: OrderedDict, level=0, reverse_sort=False):
-        log_prefix = "recursive_sort(level=%s):" % level
+        # log_prefix = "recursive_sort(level=%s):" % level
         if isinstance(obj, list):
             for elem in obj:
+                # noinspection PyUnresolvedReferences
                 __class__.recursive_sort_v2(
                     elem, level=level + 1, reverse_sort=reverse_sort
                 )
@@ -347,11 +374,14 @@ class RuamelYamlParser(GitInventoryParser):
 
         for key in sorted_keys:
             value = obj[key]
-            # print('v1', level, key, super(ruamel.yaml.comments.CommentedMap, obj).keys())
+            # print('v1', level, key, super(
+            #   ruamel.yaml.comments.CommentedMap, obj).keys())
+            # noinspection PyUnresolvedReferences
             __class__.recursive_sort_v2(
                 value, level=level + 1, reverse_sort=reverse_sort
             )
-            # print('v2', level, key, super(ruamel.yaml.comments.CommentedMap, obj).keys())
+            # print('v2', level, key, super(
+            #   ruamel.yaml.comments.CommentedMap, obj).keys())
             obj.move_to_end(key)
 
     ########################################
@@ -362,16 +392,18 @@ class RuamelYamlParser(GitInventoryParser):
     @staticmethod
     def recursive_sort(obj, level=0, reverse_sort=False):
         # log_prefix = "recursive_sort(%s):" % obj
-        log_prefix = "recursive_sort(level=%s):" % level
+        # log_prefix = "recursive_sort(level=%s):" % level
 
         if isinstance(obj, dict):
             # res = dict()
             if isinstance(obj, CommentedMap):
+                # noinspection PyUnresolvedReferences
                 res = __class__.map_sort_before(obj, reverse_sort=reverse_sort)
 
                 # for k in obj.keys():
                 # _ok -> set of Own Keys, i.e. not merged in keys
                 for k in list(obj._ok):
+                    # noinspection PyUnresolvedReferences
                     res[k] = __class__.recursive_sort(
                         obj[k], level=level + 1, reverse_sort=reverse_sort
                     )
@@ -386,23 +418,28 @@ class RuamelYamlParser(GitInventoryParser):
                     sorted_keys = reversed(sorted_keys)
 
                 for k in sorted_keys:
+                    # noinspection PyUnresolvedReferences
                     res[k] = __class__.recursive_sort(
                         obj[k], level=level + 1, reverse_sort=reverse_sort
                     )
 
             # if res:
-            #     log.debug("%s map_sort_before : res => %s", log_prefix, PrettyLog(res))
+            #     log.debug("%s map_sort_before : res => %s", log_prefix,
+            #       PrettyLog(res))
             # for k in sorted(obj.keys()):
-            #     res[k] = __class__.recursive_sort(obj[k], level=level+1, reverse_sort=reverse_sort)
+            #     res[k] = __class__.recursive_sort(obj[k], level=level+1,
+            #       reverse_sort=reverse_sort)
             return res
         if isinstance(obj, list):
             # if isinstance(obj, CommentedMap):
             #     res = __class__.seq_sort_before(obj)
             # else:
             #     res = obj
-            # log.debug("%s seq_sort_before : res => %s", log_prefix, PrettyLog(res))
+            # log.debug("%s seq_sort_before : res => %s", log_prefix,
+            #   PrettyLog(res))
             # for idx, elem in enumerate(res):
             for idx, elem in enumerate(obj):
+                # noinspection PyUnresolvedReferences
                 obj[idx] = __class__.recursive_sort(
                     elem, level=level + 1, reverse_sort=reverse_sort
                 )
@@ -455,9 +492,13 @@ class RuamelYamlParser(GitInventoryParser):
         return CommentToken(
             value=kwargs["value"] if "value" in kwargs else token.value,
             start_mark=(
-                kwargs["start_mark"] if "start_mark" in kwargs else token.start_mark
+                kwargs["start_mark"]
+                if "start_mark" in kwargs
+                else token.start_mark
             ),
-            end_mark=kwargs["end_mark"] if "end_mark" in kwargs else token.end_mark,
+            end_mark=kwargs["end_mark"]
+            if "end_mark" in kwargs
+            else token.end_mark,
             column=kwargs["column"] if "column" in kwargs else token.column,
         )
 
@@ -470,6 +511,7 @@ class RuamelYamlParser(GitInventoryParser):
         if len(tokens) == 1:
             return tokens[0]
 
+        # noinspection PyUnresolvedReferences
         return __class__._copy_comment_token(
             token=tokens[0],
             value=__class__._comment_tokens_to_str(tokens),
@@ -499,8 +541,10 @@ class RuamelYamlParser(GitInventoryParser):
             return res
 
         # assert len(comment_tokens) == 2
-        # assert comment_tokens[0] is None or isinstance(comment_tokens[0], CommentToken)
-        # assert comment_tokens[1] is None or isinstance(comment_tokens[1], list)
+        # assert comment_tokens[0] is None or isinstance(comment_tokens[0],
+        #   CommentToken)
+        # assert comment_tokens[1] is None or isinstance(comment_tokens[1],
+        #   list)
 
         if len(comment_tokens) != 2:
             raise AssertionError("assert len(comment_tokens) == 2")
@@ -508,14 +552,21 @@ class RuamelYamlParser(GitInventoryParser):
             comment_tokens[0], CommentToken
         ):
             raise AssertionError(
-                "assert comment_tokens[0] is None or isinstance(comment_tokens[0], CommentToken)"
+                "assert comment_tokens[0] is None or "
+                "isinstance(comment_tokens[0], CommentToken)"
             )
-        if comment_tokens[1] is not None and not isinstance(comment_tokens[1], list):
+        if comment_tokens[1] is not None and not isinstance(
+            comment_tokens[1], list
+        ):
             raise AssertionError(
-                "assert comment_tokens[1] is None or isinstance(comment_tokens[1], list)"
+                "assert comment_tokens[1] is None or "
+                "isinstance(comment_tokens[1], list)"
             )
 
+        # noinspection PyUnresolvedReferences
         res.before = __class__._get_comment_list(comment_tokens[0])
+
+        # noinspection PyUnresolvedReferences
         res.inline = __class__._get_comment_list(comment_tokens[1])
         return res
 
@@ -525,7 +576,8 @@ class RuamelYamlParser(GitInventoryParser):
     ) -> Comments:
         """Get comments for map items.
 
-        Comment for current element is splitted into two: current element and after it.
+        Comment for current element is split into two: current element
+        and after it.
         """
 
         res = Comments()
@@ -534,8 +586,10 @@ class RuamelYamlParser(GitInventoryParser):
 
         # assert len(comment_tokens) == 4
         # assert comment_tokens[0] is None
-        # assert comment_tokens[2] is None or isinstance(comment_tokens[2], CommentToken)
-        # assert comment_tokens[3] is None or isinstance(comment_tokens[3], list)
+        # assert comment_tokens[2] is None or isinstance(comment_tokens[2],
+        #   CommentToken)
+        # assert comment_tokens[3] is None or isinstance(comment_tokens[3],
+        #   list)
 
         if len(comment_tokens) != 4:
             raise AssertionError("assert len(comment_tokens) == 4")
@@ -545,21 +599,28 @@ class RuamelYamlParser(GitInventoryParser):
             comment_tokens[2], CommentToken
         ):
             raise AssertionError(
-                "assert comment_tokens[2] is None or isinstance(comment_tokens[2], CommentToken)"
+                "assert comment_tokens[2] is None or "
+                "isinstance(comment_tokens[2], CommentToken)"
             )
-        if comment_tokens[3] is not None and not isinstance(comment_tokens[3], list):
+        if comment_tokens[3] is not None and not isinstance(
+            comment_tokens[3], list
+        ):
             raise AssertionError(
-                "assert comment_tokens[3] is None or isinstance(comment_tokens[3], list)"
+                "assert comment_tokens[3] is None or "
+                "isinstance(comment_tokens[3], list)"
             )
 
         # "before" for map is in the [1]
+        # noinspection PyUnresolvedReferences
         res.before = __class__._get_comment_list(comment_tokens[1])
 
         # "inline" for map is in the [2]
+        # noinspection PyUnresolvedReferences
         s = __class__._comment_tokens_to_str(comment_tokens[2])
         if s is not None:
             if "\n" not in s:
                 # no need to split "inline" comment
+                # noinspection PyUnresolvedReferences
                 res.inline = __class__._get_comment_list(comment_tokens[2])
                 return res
 
@@ -571,6 +632,7 @@ class RuamelYamlParser(GitInventoryParser):
                 current_after[1] = None
 
             if current_after[0]:
+                # noinspection PyUnresolvedReferences
                 res.inline = [
                     __class__._copy_comment_token(
                         token=comment_tokens[2],
@@ -591,6 +653,7 @@ class RuamelYamlParser(GitInventoryParser):
         if comment_tokens[3]:
             if res.after is None:
                 res.after = []
+            # noinspection PyUnresolvedReferences
             res.after.extend(__class__._get_comment_list(comment_tokens[3]))
 
         return res
@@ -605,7 +668,8 @@ class RuamelYamlParser(GitInventoryParser):
 
         Args:
             obj (CommentedMap): source object
-            reverse_sort (bool): set to True if reverse sort key order preferred (default=True)
+            reverse_sort (bool): set to True if reverse sort key order
+                preferred (default=True)
 
         Returns:
             CommentedMap: target object
@@ -627,6 +691,7 @@ class RuamelYamlParser(GitInventoryParser):
         # Gather comments
 
         # First comment is handled specially
+        # noinspection PyUnresolvedReferences
         comments = __class__._get_start_comments(obj.ca.comment)
 
         # assert comments.after is None
@@ -636,6 +701,7 @@ class RuamelYamlParser(GitInventoryParser):
         prev_after = comments.inline
         # Next lines' comments
         for key in obj.keys():
+            # noinspection PyUnresolvedReferences
             comments = __class__._get_map_comments(obj.ca.items.get(key))
 
             # add "after" comment from previous element, if any
@@ -646,7 +712,8 @@ class RuamelYamlParser(GitInventoryParser):
                 prev_after = None
 
             if not any(
-                isinstance(obj.get(key), cls) for cls in [CommentedMap, CommentedSeq]
+                isinstance(obj.get(key), cls)
+                for cls in [CommentedMap, CommentedSeq]
             ):
                 # consider "after" comment as "before" only
                 # for simple elements
@@ -661,9 +728,11 @@ class RuamelYamlParser(GitInventoryParser):
             if inline:
                 inline[-1].value += "\n"
                 inline += prev_after or []
+                # noinspection PyUnresolvedReferences
                 inline += __class__._get_comment_list(obj.ca.end) or []
             else:
                 inline = prev_after or []
+                # noinspection PyUnresolvedReferences
                 inline += __class__._get_comment_list(obj.ca.end) or []
                 inline[0].value = "\n" + inline[0].value
             all_comments[last_key].inline = inline
@@ -690,12 +759,17 @@ class RuamelYamlParser(GitInventoryParser):
             if comments.inline:
                 # assert isinstance(comments.inline, list)
                 if not isinstance(comments.inline, list):
-                    raise AssertionError("assert isinstance(comments.inline, list)")
+                    raise AssertionError(
+                        "assert isinstance(comments.inline, list)"
+                    )
 
-                c = obj_sorted.ca.items.setdefault(key, [None, None, None, None])
+                c = obj_sorted.ca.items.setdefault(
+                    key, [None, None, None, None]
+                )
                 # assert c[2] is None
                 if c[2] is not None:
                     raise AssertionError("assert c[2] is None")
+                # noinspection PyUnresolvedReferences
                 c[2] = __class__._merge_comment_tokens(comments.inline)
             if comments.after:
                 c = obj_sorted.ca.items.setdefault(key, [None, None, None, []])
@@ -711,7 +785,8 @@ class RuamelYamlParser(GitInventoryParser):
     ) -> Comments:
         """Get comments for seq items.
 
-        Comment for current element is splitted into two: current element and after it.
+        Comment for current element is split into two: current element
+        and after it.
         """
 
         res = Comments()
@@ -735,12 +810,14 @@ class RuamelYamlParser(GitInventoryParser):
         if comment_tokens[3] is not None:
             raise AssertionError("assert comment_tokens[3] is None")
 
+        # noinspection PyUnresolvedReferences
         s = __class__._comment_tokens_to_str(comment_tokens[0])
         # If no inline comment for current element
         if s is None:
             return res
         if "\n" not in s:
             # no need to split "inline" comment
+            # noinspection PyUnresolvedReferences
             res.inline = __class__._get_comment_list(comment_tokens[2])
             return res
 
@@ -753,8 +830,11 @@ class RuamelYamlParser(GitInventoryParser):
 
         # assert isinstance(comment_tokens[0], CommentToken)
         if not isinstance(comment_tokens[0], CommentToken):
-            raise AssertionError("assert isinstance(comment_tokens[0], CommentToken)")
+            raise AssertionError(
+                "assert isinstance(comment_tokens[0], CommentToken)"
+            )
         if current_after[0]:
+            # noinspection PyProtectedMember,PyUnresolvedReferences
             res.inline = [
                 __class__._copy_comment_token(
                     token=comment_tokens[0],
@@ -795,7 +875,9 @@ class RuamelYamlParser(GitInventoryParser):
         ]
 
     @staticmethod
-    def seq_sort_before(obj: CommentedSeq, sorted_indices: list[Any]) -> CommentedSeq:
+    def seq_sort_before(
+        obj: CommentedSeq, sorted_indices: list[Any]
+    ) -> CommentedSeq:
         """Sort sequence with comments before a block.
 
         Args:
@@ -803,6 +885,8 @@ class RuamelYamlParser(GitInventoryParser):
 
         Returns:
             CommentedSeq: target object
+            :param obj: object to sort
+            :param sorted_indices: list of sort keys to sort by
         """
         # assert isinstance(obj, CommentedSeq)
         if not isinstance(obj, CommentedSeq):
@@ -813,6 +897,7 @@ class RuamelYamlParser(GitInventoryParser):
         # Gather comments
 
         # First comment is handled specially
+        # noinspection PyUnresolvedReferences
         comments = __class__._get_start_comments(obj.ca.comment)
         # assert comments.after is None
         if comments.after is not None:
@@ -820,6 +905,7 @@ class RuamelYamlParser(GitInventoryParser):
         prev_after = comments.inline
         # Next lines' comments
         for obj_index in range(len(obj)):
+            # noinspection PyUnresolvedReferences
             comments = __class__._get_seq_comments(obj.ca.items.get(obj_index))
 
             # add "after" comment from previous element, if any
@@ -839,9 +925,11 @@ class RuamelYamlParser(GitInventoryParser):
             if inline:
                 inline[-1].value += "\n"
                 inline += prev_after or []
+                # noinspection PyUnresolvedReferences
                 inline += __class__._get_comment_list(obj.ca.end) or []
             else:
                 inline = prev_after or []
+                # noinspection PyUnresolvedReferences
                 inline += __class__._get_comment_list(obj.ca.end) or []
                 inline[0].value = "\n" + inline[0].value
             all_comments[last_key].inline = inline
@@ -852,20 +940,25 @@ class RuamelYamlParser(GitInventoryParser):
             obj_sorted.append(obj[obj_index])
             comments = all_comments[obj_index]
             if comments.before:
-                c = obj_sorted.ca.items.setdefault(sorted_index, [None, [], None, None])
+                c = obj_sorted.ca.items.setdefault(
+                    sorted_index, [None, [], None, None]
+                )
                 if c[1] is None:
                     c[1] = []
                 c[1].extend(comments.before)
             if comments.inline:
                 # assert isinstance(comments.inline, list)
                 if not isinstance(comments.inline, list):
-                    raise AssertionError("assert isinstance(comments.inline, list)")
+                    raise AssertionError(
+                        "assert isinstance(comments.inline, list)"
+                    )
                 c = obj_sorted.ca.items.setdefault(
                     sorted_index, [None, None, None, None]
                 )
                 # assert c[0] is None
                 if c[0] is not None:
                     raise AssertionError("assert c[0] is None")
+                # noinspection PyUnresolvedReferences
                 c[0] = __class__._merge_comment_tokens(comments.inline)
             # assert comments.after is None
             if comments.after is not None:
@@ -879,7 +972,8 @@ class RuamelYamlParser(GitInventoryParser):
     # def recursive_sort_v1(obj):
     #     CM = ruamel.yaml.comments.CommentedMap
     #     # handle commented maps/dictionaries
-    #     # the commented map is the structure ruamel.yaml uses when doing a round-trip (load+dump) and
+    #     # the commented map is the structure ruamel.yaml uses when doing a
+    #       round-trip (load+dump) and
     #     # round-tripping is designed to keep the keys in the order that they
     #     # were during loading
     #     try:
@@ -908,11 +1002,15 @@ class PyYamlParser(GitInventoryParser):
         if YAML_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("pyyaml", "python pyyaml library is missing") from YAML_IMPORT_ERROR
+            raise MissingLibError(
+                "pyyaml", "python pyyaml library is missing"
+            ) from YAML_IMPORT_ERROR
 
         self.yaml_parser_type = "PyYaml"
         # self.yaml_config = yaml_config or CONFIG_YAML_DEFAULT
-        super().__init__(yaml_lib=self.yaml_parser_type, yaml_config=yaml_config)
+        super().__init__(
+            yaml_lib=self.yaml_parser_type, yaml_config=yaml_config
+        )
         self.yaml = yaml
 
         self.load_config = {
@@ -953,7 +1051,7 @@ class PyYamlParser(GitInventoryParser):
         try:
             return self.yaml.load(yaml_content, **self.load_config)
         except yaml.YAMLError as e:
-            raise self.yaml.YAMLError(f"PyYAML parsing error: {e}")
+            raise self.yaml.YAMLError(f"PyYAML parsing error: {e}") from e
 
     # def load(self, file_path: str):
     #     # with open(Path(file_path)) as file:
@@ -972,10 +1070,10 @@ class PyYamlParser(GitInventoryParser):
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 return self.yaml.load(file, **self.load_config)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"YAML file not found: {file_path}")
+        except FileNotFoundError as e:
+            raise FileNotFoundError(f"YAML file not found: {file_path}") from e
         except self.yaml.YAMLError as e:
-            raise self.yaml.YAMLError(f"PyYAML file parsing error: {e}")
+            raise self.yaml.YAMLError(f"PyYAML file parsing error: {e}") from e
 
     # ref: https://pyyaml.org/wiki/PyYAMLDocumentation
     def dump(self, data, stream):
@@ -1003,9 +1101,11 @@ class PyYamlParser(GitInventoryParser):
             with open(file_path, "w", encoding="utf-8") as file:
                 self.yaml.dump(data, file, **self.dump_config)
         except yaml.YAMLError as e:
-            raise self.yaml.YAMLError(f"PyYAML file serialization error: {e}")
+            raise self.yaml.YAMLError(
+                f"PyYAML file serialization error: {e}"
+            ) from e
         except IOError as e:
-            raise IOError(f"Error writing to file {file_path}: {e}")
+            raise IOError(f"Error writing to file {file_path}: {e}") from e
 
     # ref:
     # https://stackoverflow.com/questions/40226610/ruamel-yaml-equivalent-of-sort-keys#40227545
@@ -1014,10 +1114,12 @@ class PyYamlParser(GitInventoryParser):
         if isinstance(obj, dict):
             res = dict()
             for k in sorted(obj.keys()):
+                # noinspection PyUnresolvedReferences
                 res[k] = __class__.recursive_sort(obj[k])
             return res
         if isinstance(obj, list):
             for idx, elem in enumerate(obj):
+                # noinspection PyUnresolvedReferences
                 obj[idx] = __class__.recursive_sort(elem)
         return obj
 
@@ -1030,7 +1132,8 @@ def get_yaml_parser(yaml_lib_mode, yaml_config) -> GitInventoryParser:
         yaml_parser = RuamelYamlParser(yaml_config)
     else:
         raise ValueError(
-            f"Unsupported YAML library mode: {yaml_lib_mode}. Use 'pyyaml' or 'ruamel'."
+            f"Unsupported YAML library mode: {yaml_lib_mode}. Use 'pyyaml' "
+            f"or 'ruamel'."
         )
 
     return yaml_parser

@@ -10,29 +10,37 @@ DOCUMENTATION = r"""
 module: update_inventory
 author:
     - "Lee Johnson (@lj020326)"
-short_description: Add/update group and/or host nodes and respective variable settings to a specified YAML-file based inventory. 
+short_description: >-
+  Add/update group and/or host nodes and respective variable settings to a
+  specified YAML-file based inventory.
 description:
-  Ansible module to add, update, and/or remove group and/or host nodes to a specified YAML-file
-  based inventory repository.
-
-  If a 'inventory_repo_url' is specified, modules will clone (optionally to a temporary repo directory) and commit and push inventory changes to the specified inventory repository.
-
-  After git operations are completed, the repository directory may be removed or preserved based on the 'remove_repo_dir' setting. 
+  - Ansible module to add, update, and/or remove group and/or host nodes to a
+    specified YAML-file based inventory repository.
+  - If a 'inventory_repo_url' is specified, modules will clone (optionally
+    to a temporary repo directory) and commit and push inventory changes to
+    the specified inventory repository.
+  - After git operations are completed, the repository directory may be
+    removed or preserved based on the 'remove_repo_dir' setting.
 options:
     inventory_file:
         required: true
         type: path
         description:
-            - File path to inventory hosts YAML file relative to repo directory root or parameter `inventory_dir` if defined/set.
+            - File path to inventory hosts YAML file relative to repo directory
+              root or parameter `inventory_dir` if defined/set.
             - The inventory file must be YAML formatted.
-            - E.g., `test_inventory/child_inventory/hosts.yml`, `inventory/SANDBOX/hosts.yml`, etc. 
+            - E.g., `test_inventory/child_inventory/hosts.yml`,
+              `inventory/SANDBOX/hosts.yml`, etc.
     inventory_dir:
         required: false
         type: path
         description:
-            - Relative path to inventory directory where inventory YAML files are located relative to repo directory root. 
-            - If not specified, the `inventory_dir` is derived from the implied relative path of `inventory_file`.
-            - E.g., `test_inventory/child_inventory`, `inventory/SANDBOX`, `inventory/DEV`, or `inventory` for parent inventory use cases. 
+            - Relative path to inventory directory where inventory YAML files
+              are located relative to repo directory root.
+            - If not specified, the `inventory_dir` is derived from the implied
+              relative path of `inventory_file`.
+            - E.g., `test_inventory/child_inventory`, `inventory/SANDBOX`,
+              `inventory/DEV`, or `inventory` for parent inventory use cases.
     inventory_repo_url:
         description:
             - Git inventory repository URL.
@@ -41,17 +49,21 @@ options:
         required: false
         type: path
         description:
-            - Path to base directory where the inventory git repository will be cloned.
-            - If not specified, a temporary directory is created in order to clone the inventory git repo.
-            - The temporary directory is automatically removed after performing the inventory update and git pacp action.
-            - If desired, the temporary directory may be saved by setting the 'remove_repo_dir' option to true.
+            - Path to base directory where the inventory git repository will
+              be cloned.
+            - If not specified, a temporary directory is created in order
+              to clone the inventory git repo.
+            - The temporary directory is automatically removed after performing
+              the inventory update and git pacp action.
+            - If desired, the temporary directory may be saved by setting the
+              'remove_repo_dir' option to true.
     inventory_repo_branch:
         description:
             - Git branch where perform git push.
         type: str
         default: main
     yaml_lib_mode:
-        description: 
+        description:
             - specifies the YAML library - 'ruamel' or 'pyyaml'.
         choices: [ ruamel, pyyaml ]
         default: ruamel
@@ -61,10 +73,14 @@ options:
         required: false
         default: "xenv_groups.yml"
         description:
-            - File path to global groups YAML file relative to repo directory root or parameter `inventory_dir` if defined/set.
+            - File path to global groups YAML file relative to repo directory
+              root or parameter `inventory_dir` if defined/set.
             - The inventory file must be YAML formatted.
-            - E.g., `global_groups.yml`, `test_inventory/xenv_groups.yml`, `inventory/xenv_groups.yml`, etc.
-            - Used to validate addition of groups to inventory file when the parameter `enforce_global_groups_must_already_exist` is set to true
+            - E.g., `global_groups.yml`, `test_inventory/xenv_groups.yml`,
+              `inventory/xenv_groups.yml`, etc.
+            - Used to validate addition of groups to inventory file when the
+              parameter `enforce_global_groups_must_already_exist` is set
+              to true.
     inventory_root_yaml_key:
         description:
             - Inventory root node key in yaml. E.g., 'all'
@@ -91,14 +107,17 @@ options:
         type: str
     vars_overwrite_depth:
         description:
-            - if vars_state='overwrite' is used, the depth at which variable overwrites will begin.
+            - if vars_state='overwrite' is used, the depth at which variable
+              overwrites will begin.
         default: 2
         type: int
     backup:
         description:
-          - Create a backup inventory file including the timestamp information so you can get
-            the original inventory file back if you somehow clobbered it incorrectly.  
-            This option is should not be necessary since the file can be rolled back to a prior commit using git.  
+          - Create a backup inventory file including the timestamp information
+            so you can get the original inventory file back if you somehow
+            clobbered it incorrectly.
+            This option is should not be necessary since the file can be rolled
+            back to a prior commit using git.
         type: bool
         default: false
     remove_repo_dir:
@@ -108,47 +127,56 @@ options:
         default: true
     group_list:
         description:
-            - Specifies a list of group dicts.  
+            - Specifies a list of group dicts.
               The required key within the group item is 'group_name'.
-              The supported keys within the group item dict are 'group_vars', 'parent_groups' and 'groups'.
-              The 'parent_groups'/'groups' value is used to specify parent groups and may either be a list of group name strings or 
-              nested dicts where each key represents a group name. 
+              The supported keys within the group item dict are 'group_vars',
+              'parent_groups' and 'groups'.
+              The 'parent_groups'/'groups' value is used to specify parent
+              groups and may either be a list of group name strings or
+              nested dicts where each key represents a group name.
         aliases: ['groups']
         default: []
         type: list
         elements: dict
     host_list:
         description:
-            - Specifies a list of host dicts.  
+            - Specifies a list of host dicts.
               The required key within the group item is 'host_name'.
-              The supported keys within the host item dict are 'host_name', 'host_vars', 'parent_groups' and 'groups'.
-              The 'parent_groups'/'groups' value may either be a list of hostname strings or 
-              nested dicts where each key represents a parent group name. 
+              The supported keys within the host item dict are 'host_name',
+              'host_vars', 'parent_groups' and 'groups'.
+              The 'parent_groups'/'groups' value is used to specify parent
+              groups and may either be a list of group name strings or
+              nested dicts where each key represents a group name.
         aliases: ['hosts']
         default: []
         type: list
         elements: dict
     use_vars_files:
         description:
-            - Use vars files ('group_vars/' or 'host_vars/') for group/host vars instead of inline host_vars/group_vars.
+            - Use vars files ('group_vars/' or 'host_vars/') for group/host
+              vars instead of inline host_vars/group_vars.
         type: bool
         default: true
     create_empty_groupvars_files:
         description:
-            - Creates empty 'group_vars/' vars files for group vars even when no vars specified.
-            - Only used if the `use_vars_files` is enabled. 
+            - Creates empty 'group_vars/' vars files for group vars even
+              when no vars specified.
+            - Only used if the `use_vars_files` is enabled.
         type: bool
         default: true
     create_empty_hostvars_files:
         description:
-            - Creates empty 'host_vars/' vars files for host vars even when no vars specified.
-            - Only used if the `use_vars_files` is enabled. 
+            - Creates empty 'host_vars/' vars files for host vars even when
+              no vars specified.
+            - Only used if the `use_vars_files` is enabled.
         type: bool
         default: false
     create_parent_groupvar_files:
         description:
-            - Creates empty groupvar files ('group_vars/') for parent groups even when no vars specified.
-            - Only used if the `use_vars_files` or `create_empty_groupvars_files` is enabled (default). 
+            - Creates empty groupvar files ('group_vars/') for parent groups
+              even when no vars specified.
+            - Only used if the `use_vars_files` or
+              `create_empty_groupvars_files` is enabled (default).
         type: bool
         default: true
     always_add_child_group_to_root:
@@ -163,23 +191,27 @@ options:
         default: false
     enforce_global_groups_must_already_exist:
         description:
-            - Validate host groups exist already in the specified global_groups_file before allowing hosts to be added.
-            - This will automatically be set to 'false' (ignored) when `global_groups_file` is equal to the `inventory_file` parameter 
+            - Validate host groups exist already in the specified
+              global_groups_file before allowing hosts to be added.
+            - This will automatically be set to 'false' (ignored) when
+              `global_groups_file` is equal to the `inventory_file` parameter.
         type: bool
         default: true
     enable_groupvar_symlinks_for_child_inventories:
         description:
             - Enables `group_vars` symlinks for child inventories.
-            - Only used if the `use_vars_files` is enabled. 
-            - Used to link group_vars/*.yml files upon creation of corresponding root inventory `group_vars`.
+            - Only used if the `use_vars_files` is enabled.
+            - Used to link group_vars/*.yml files upon creation of
+              corresponding root inventory `group_vars`.
         type: bool
         default: true
     symlink_subdirs:
         description:
             - Specifies a list of inventory sub-directories.
-            - Used when 'enable_groupvar_symlinks_for_child_inventories' is set to create group_vars symlinks.
-            - The sub-directories must reside directly in 'inventory_dir'.  
-        default: ['DEV','QA','PROD','SANDBOX']
+            - Used when 'enable_groupvar_symlinks_for_child_inventories' is
+              set to create group_vars symlinks.
+            - The sub-directories must reside directly in 'inventory_dir'.
+        default: ['DEV', 'QA', 'PROD', 'SANDBOX']
         type: list
         elements: str
     git_comment_prefix:
@@ -201,7 +233,8 @@ options:
         suboptions:
             key_file:
                 description:
-                    - Specify an optional private key file path, on the target host, to use for the checkout.
+                    - Specify an optional private key file path, on the
+                      target host, to use for the checkout.
                 type: path
             accept_hostkey:
                 description:
@@ -211,11 +244,14 @@ options:
                 default: false
             ssh_opts:
                 description:
-                    - Creates a wrapper script and exports the path as GIT_SSH
-                      which git then automatically uses to override ssh arguments.
-                      An example value could be "-o StrictHostKeyChecking=no"
-                      (although this particular option is better set via
-                      C(accept_hostkey)).
+                    - Creates a wrapper script and exports the
+                      path as GIT_SSH which git then
+                      automatically uses to override ssh
+                      arguments.
+                      An example value could be
+                      "-o StrictHostKeyChecking=no"
+                      (although this particular option
+                      is better set via C(accept_hostkey)).
                 type: str
     test_mode:
         description:
@@ -224,12 +260,14 @@ options:
         default: false
     git_user_name:
         description:
-            - Explicit git local user name. Nice to have for remote operations.
+            - Explicit git local user name.
+              Nice to have for remote operations.
         type: str
         default: ansible
     git_user_email:
         description:
-            - Explicit git local email address. Nice to have for remote operations.
+            - Explicit git local email address.
+              Nice to have for remote operations.
         type: str
         default: ansible@example.org
 
@@ -240,7 +278,7 @@ requirements:
 EXAMPLES = r"""
 - name: "Add groups with system_name and system_env using groups list method"
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -263,9 +301,9 @@ EXAMPLES = r"""
         groups:
           - app_systest2
 
-- name: "Add groups with system_name and system_env using children groups method"
+- name: Add groups with system_name and system_env using children groups method
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -287,7 +325,7 @@ EXAMPLES = r"""
 
 - name: "Add `groups_vars` to inventory"
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -304,12 +342,15 @@ EXAMPLES = r"""
           - fake_group_kcp
   register: __update_group_result
 
-- name: "Adds vars into inventory root `group_vars` and symlinks to child inventory `groups_vars`"
+- name: >-
+    Adds vars into inventory root `group_vars` and symlinks to child
+    inventory `groups_vars`
   dettonville.git_inventory.update_inventory:
     inventory_repo_url: "{{ __test_inventory_git_repo_url }}"
     inventory_repo_branch: "{{ __test_inventory_git_repo_branch }}"
-    ## Note when the inventory file is in a child directory from the inventory_dir,
-    ## a symlink will automatically get created into the child inventory directory `group_vars`
+    ## Note when the inventory file is in a child directory from the
+    ## inventory_dir, a symlink will automatically get created into the child
+    ## inventory directory `group_vars`
     inventory_dir: inventory
     inventory_file: SANDBOX/hosts.yml
     use_vars_files: true
@@ -320,15 +361,16 @@ EXAMPLES = r"""
       - group_name: fake_group_kcp_sandbox
         group_vars:
           fake_env: sandbox
-        ## Note parent groups will automatically get created if they do not already exist
-        ## so there is no need to include separate items/entries for any of the parent groups
+        ## Note parent groups will automatically get created if they do not
+        ## already exist so there is no need to include separate items/entries
+        ## for any of the parent groups
         parent_groups:
           - fake_group_kcp
   register: __update_groups_result
 
 - name: Add groups to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -362,7 +404,7 @@ EXAMPLES = r"""
 
 - name: Add and update groups with vars in group_vars files
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -375,7 +417,7 @@ EXAMPLES = r"""
 
 - name: Add groups to hierarchical groups
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -415,7 +457,7 @@ EXAMPLES = r"""
 
 - name: Update groups at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -452,7 +494,7 @@ EXAMPLES = r"""
 
 - name: Overwrite groups at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -494,7 +536,7 @@ EXAMPLES = r"""
 
 - name: Remove groups from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -505,7 +547,7 @@ EXAMPLES = r"""
 
 - name: Add hosts to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -534,7 +576,7 @@ EXAMPLES = r"""
 
 - name: Add hosts with vars in host_vars files
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007 - add hosts: admin01.qa.site1.example.int"
@@ -547,12 +589,15 @@ EXAMPLES = r"""
           service_domains:
             - admin.qa.example.int
 
-- name: "Adds host vars into inventory root `host_vars` and update child inventory hosts.yml"
+- name: >-
+    Adds host vars into inventory root `host_vars` and update child inventory
+    hosts.yml
   dettonville.git_inventory.update_inventory:
     inventory_repo_url: "{{ __test_inventory_git_repo_url }}"
     inventory_repo_branch: "{{ __test_inventory_git_repo_branch }}"
-    ## Note when the inventory file is in a child directory from the inventory_dir,
-    ## a symlink will automatically get created into the child inventory directory `group_vars`
+    ## Note when the inventory file is in a child directory from the
+    ## inventory_dir, a symlink will automatically get created into the
+    ## child inventory directory `group_vars`
     inventory_dir: inventory
     inventory_file: SANDBOX/hosts.yml
     use_vars_files: true
@@ -575,7 +620,7 @@ EXAMPLES = r"""
 
 - name: Add hosts to hierarchical groups
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -598,7 +643,7 @@ EXAMPLES = r"""
 
 - name: Update hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -641,7 +686,7 @@ EXAMPLES = r"""
 
 - name: Overwrite hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -685,7 +730,7 @@ EXAMPLES = r"""
 
 - name: Remove hosts from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -698,7 +743,7 @@ EXAMPLES = r"""
 
 - name: Add groups and hosts to inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -724,7 +769,7 @@ EXAMPLES = r"""
 
 - name: Update groups and hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -754,7 +799,7 @@ EXAMPLES = r"""
 
 - name: Overwrite groups and hosts at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -805,7 +850,7 @@ EXAMPLES = r"""
 
 - name: Remove groups and hosts from inventory at hosts.yml
   dettonville.git_inventory.update_inventory:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
@@ -820,16 +865,16 @@ EXAMPLES = r"""
 """  # NOQA
 
 RETURN = r"""
-message: 
+message:
     description: Status message for lookup
     type: str
     returned: always
     sample: "Inventory updated successfully"
-failed: 
+failed:
     description: True if failed to update the inventory.
     type: bool
     returned: always
-changed: 
+changed:
     description: True if successful
     type: bool
     returned: always
@@ -846,17 +891,18 @@ backup_files:
 
 """  # NOQA
 
+import logging
+import pprint
+import sys
+
+# noinspection PyUnresolvedReferences
 from ansible.module_utils.basic import AnsibleModule
 
 # ref: https://terryhowe.github.io/ansible-modules-hashivault/dev_guide/developing_collections.html
 # noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.git_inventory_updater import (
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.git_inventory_updater import (  # noqa: E501
     GitInventoryUpdater,
 )
-
-import sys
-import logging
-import pprint
 
 # define available arguments/parameters a user can pass to the module
 module_args = dict(
@@ -868,14 +914,20 @@ module_args = dict(
     inventory_root_yaml_key=dict(type="str", default="all"),
     global_groups_file=dict(type="path", default="xenv_groups.yml"),
     logging_level=dict(
-        type="str", choices=["NOTSET", "DEBUG", "INFO", "ERROR"], default="INFO"
+        type="str",
+        choices=["NOTSET", "DEBUG", "INFO", "ERROR"],
+        default="INFO",
     ),
     git_comment_prefix=dict(
         aliases=["jira_id"], required=False, type="str", default=None
     ),
     git_comment_body=dict(required=False, type="str", default=None),
-    group_list=dict(aliases=["groups"], type="list", elements="dict", default=[]),
-    host_list=dict(aliases=["hosts"], type="list", elements="dict", default=[]),
+    group_list=dict(
+        aliases=["groups"], type="list", elements="dict", default=[]
+    ),
+    host_list=dict(
+        aliases=["hosts"], type="list", elements="dict", default=[]
+    ),
     state=dict(choices=["merge", "overwrite", "absent"], default="merge"),
     vars_state=dict(choices=["merge", "overwrite"], default="merge"),
     vars_overwrite_depth=dict(type="int", default=2),
@@ -886,7 +938,9 @@ module_args = dict(
     always_add_child_group_to_root=dict(type="bool", default=False),
     always_add_host_to_root_hosts=dict(type="bool", default=False),
     enforce_global_groups_must_already_exist=dict(type="bool", default=True),
-    enable_groupvar_symlinks_for_child_inventories=dict(type="bool", default=True),
+    enable_groupvar_symlinks_for_child_inventories=dict(
+        type="bool", default=True
+    ),
     symlink_subdirs=dict(
         type="list", elements="str", default=["DEV", "QA", "PROD", "SANDBOX"]
     ),
@@ -910,7 +964,6 @@ module_args = dict(
 
 # ref: https://docs.ansible.com/ansible/latest/dev_guide/testing_units_modules.html#restructuring-modules-to-enable-testing-module-set-up-and-other-processes
 def setup_module_object():
-
     required_one_of = [
         ["group_list", "host_list"],
     ]
@@ -943,7 +996,8 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    # logging.basicConfig(level=module.params["logging_level"], stream=sys.stdout)
+    # logging.basicConfig(level=module.params["logging_level"],
+    #   stream=sys.stdout)
     loglevel = module.params.get("logging_level")
     logging.basicConfig(level=loglevel, stream=sys.stdout)
 
@@ -992,7 +1046,7 @@ def run_module():
         module=module,
         inventory_file=inventory_file,
         git_repo_config=git_repo_config,
-        **updater_kwargs
+        **updater_kwargs,
     )
 
     update_result = inventory_updater.update_inventory(

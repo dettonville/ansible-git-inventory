@@ -1,34 +1,32 @@
 
-
 ```shell
 $ ansible --version
-ansible [core 2.19.2]
+ansible [core 2.21.2]
   config file = None
-  configured module search path = [/Users/ljohnson/.ansible/plugins/modules, /usr/share/ansible/plugins/modules]
+  configured module search path = ['/Users/ljohnson/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
   ansible python module location = /Users/ljohnson/.pyenv/versions/3.13.5/lib/python3.13/site-packages/ansible
-  ansible collection location = /Users/ljohnson/.ansible/collections:/usr/share/ansible/collections
+  ansible collection location = /Users/ljohnson/tmp/_0YDDFL:/Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory
   executable location = /Users/ljohnson/.pyenv/versions/3.13.5/bin/ansible
   python version = 3.13.5 (main, Sep 18 2025, 19:11:35) [Clang 16.0.0 (clang-1600.0.26.6)] (/Users/ljohnson/.pyenv/versions/3.13.5/bin/python3.13)
   jinja version = 3.1.6
-  pyyaml version = 6.0.2 (with libyaml v0.2.5)
-$
+  pyyaml version = 6.0.3 (with libyaml v0.2.5)
 $ REPO_DIR="$( git rev-parse --show-toplevel )"
 $ cd ${REPO_DIR}
-$
 $ env ANSIBLE_NOCOLOR=True ansible-doc -t module dettonville.git_inventory.update_groups | tee /Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory/docs/update_groups.md
-> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_zRcNud/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
+> MODULE dettonville.git_inventory.update_groups (/Users/ljohnson/tmp/_0YDDFL/ansible_collections/dettonville/git_inventory/plugins/modules/update_groups.py)
 
   Ansible module to add, update, and/or remove group nodes to a
-  specified YAML-file based inventory repository. If a
-  'inventory_repo_url' is specified, modules will clone (optionally to
-  a temporary repo directory) and commit and push inventory changes to
-  the specified inventory repository. After git operations are
-  completed, the repository directory may be removed or preserved
-  based on the 'remove_repo_dir' setting.
+  specified YAML-file based inventory repository.
+  If a 'inventory_repo_url' is specified, modules will clone
+  (optionally to a temporary repo directory) and commit and push
+  inventory changes to the specified inventory repository.
+  After git operations are completed, the repository directory may be
+  removed or preserved based on the 'remove_repo_dir' setting.
 
 OPTIONS (= indicates it is required):
 
-- always_add_child_group_to_root  Always add group to root all.
+- always_add_child_group_to_root  Always add child groups to root
+                                   all.
         default: false
         type: bool
 
@@ -40,10 +38,9 @@ OPTIONS (= indicates it is required):
         default: false
         type: bool
 
-- create_empty_groupvars_files  Creates empty vars files
-                                 ('group_vars/' or 'host_vars/') for
-                                 group/host vars even when no vars
-                                 specified.
+- create_empty_groupvars_files  Creates empty 'group_vars/' vars
+                                 files for group vars even when no
+                                 vars specified.
                                  Only used if the `use_vars_files` is
                                  enabled.
         default: true
@@ -86,7 +83,7 @@ OPTIONS (= indicates it is required):
                                              `global_groups_file` is
                                              equal to the
                                              `inventory_file`
-                                             parameter
+                                             parameter.
         default: true
         type: bool
 
@@ -119,7 +116,7 @@ OPTIONS (= indicates it is required):
                        Used to validate addition of groups to
                        inventory file when the parameter
                        `enforce_global_groups_must_already_exist` is
-                       set to true
+                       set to true.
         default: xenv_groups.yml
         type: path
 
@@ -264,7 +261,7 @@ AUTHOR: Lee Johnson (@lj020326)
 EXAMPLES:
 - name: "Add groups with system_name and system_env using groups list method"
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -287,9 +284,9 @@ EXAMPLES:
         groups:
           - app_systest2
 
-- name: "Add groups with system_name and system_env using children groups method"
+- name: Add groups with system_name and system_env using children groups method
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -311,7 +308,7 @@ EXAMPLES:
 
 - name: "Add `groups_vars` to inventory"
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_repo_branch: develop
     inventory_dir: inventory/SANDBOX
     inventory_file: hosts.yml
@@ -328,12 +325,15 @@ EXAMPLES:
           - fake_group_kcp
   register: __update_group_result
 
-- name: "Adds vars into inventory root `group_vars` and symlinks to child inventory `groups_vars`"
+- name: >-
+    Adds vars into inventory root `group_vars` and symlinks to child
+    inventory `groups_vars`
   dettonville.git_inventory.update_groups:
     inventory_repo_url: "{{ __test_inventory_git_repo_url }}"
     inventory_repo_branch: "{{ __test_inventory_git_repo_branch }}"
-    ## Note when the inventory file is in a child directory from the inventory_dir,
-    ## a symlink will automatically get created into the child inventory directory `group_vars`
+    ## Note when the inventory file is in a child directory from the
+    ## inventory_dir, a symlink will automatically get created into the child
+    ## inventory directory `group_vars`
     inventory_dir: inventory
     inventory_file: SANDBOX/hosts.yml
     use_vars_files: true
@@ -344,15 +344,16 @@ EXAMPLES:
       - group_name: fake_group_kcp_sandbox
         group_vars:
           fake_env: sandbox
-        ## Note parent groups will automatically get created if they do not already exist
-        ## so there is no need to include separate items/entries for any of the parent groups
+        ## Note parent groups will automatically get created if they do not
+        ## already exist so there is no need to include separate items/entries
+        ## for any of the parent groups
         parent_groups:
           - fake_group_kcp
   register: __update_groups_result
 
 - name: Add groups to inventory at hosts.yml
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params: "{{ test_git_ssh_params }}"
@@ -386,7 +387,7 @@ EXAMPLES:
 
 - name: Add and update groups with vars in group_vars files
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: develop
     git_comment_prefix: "INFRA-24007"
@@ -399,7 +400,7 @@ EXAMPLES:
 
 - name: Add groups to hierarchical groups
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -439,7 +440,7 @@ EXAMPLES:
 
 - name: Update groups at hosts.yml
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -476,7 +477,7 @@ EXAMPLES:
 
 - name: Overwrite groups at hosts.yml
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     inventory_repo_branch: main
     git_comment_prefix: "INFRA-24007"
@@ -518,7 +519,7 @@ EXAMPLES:
 
 - name: Remove groups from inventory at hosts.yml
   dettonville.git_inventory.update_groups:
-    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git
+    inventory_repo_url: ssh://git@repo.example.org:2222/ansible/demo-inventory.git  # yamllint disable-line rule:line-length
     inventory_file: inventory/SANDBOX/hosts.yml
     git_comment_prefix: "INFRA-24007"
     ssh_params:
