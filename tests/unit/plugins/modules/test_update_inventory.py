@@ -7,54 +7,54 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import os
-import tempfile
-import shutil
 import pprint
-import yaml
-
+import shutil
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-from ansible_collections.dettonville.git_inventory.tests.unit.plugins.modules.utils import (
-    set_module_args,
-    AnsibleExitJson,
-    AnsibleFailJson,
-    ModuleTestCase,
+# noinspection PyUnresolvedReferences,PyPackageRequirements
+import yaml
+
+# noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.git_inventory_updater import (  # noqa: E501
+    GitInventoryUpdater,
 )
 
+# noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (  # noqa: E501
+    InventoryParser,
+    InventoryParserException,
+)
+
+# noinspection PyUnresolvedReferences
 from ansible_collections.dettonville.git_inventory.plugins.modules import (
     update_inventory,
 )
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.git_inventory_updater import (
-    GitInventoryUpdater,
-)
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
-    InventoryParser,
-    InventoryParserException
-)
 
-# from ansible_collections.dettonville.git_inventory.plugins.module_utils.yaml_parser import (
-#     get_yaml_parser,
-# )
-
-MODULES_IMPORT_PATH = "ansible_collections.dettonville.git_inventory.plugins.modules"
-MODULE_UTILS_IMPORT_PATH = (
-    "ansible_collections.dettonville.git_inventory.plugins.module_utils"
+# noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.tests.unit.plugins.modules.utils import (  # noqa: E501
+    MODULE_UTILS_IMPORT_PATH,
+    MODULES_IMPORT_PATH,
+    AnsibleExitJson,
+    AnsibleFailJson,
+    ModuleTestCase,
+    make_absolute,
+    set_module_args,
 )
 
-UTILS_MODULES_IMPORT_PATH = "ansible_collections.dettonville.utils.plugins.modules"
+UTILS_MODULES_IMPORT_PATH = (
+    "ansible_collections.dettonville.utils.plugins.modules"
+)
 UTILS_MODULE_UTILS_IMPORT_PATH = (
     "ansible_collections.dettonville.utils.plugins.module_utils"
 )
 
 
-def make_absolute(base_path, name):
-    return ".".join([base_path, name])
-
-
 class TestUpdateInventoryModule(ModuleTestCase):
     """Test cases for the update_inventory Ansible module."""
 
+    # noinspection PyPep8Naming
     def setUp(self):
         """Set up test fixtures."""
         super(TestUpdateInventoryModule, self).setUp()
@@ -87,13 +87,16 @@ all:
         with open(self.inventory_file_path, "w") as f:
             f.write(self.sample_inventory)
 
+    # noinspection PyPep8Naming
     def tearDown(self):
         """Clean up test fixtures."""
         super(TestUpdateInventoryModule, self).tearDown()
         if os.path.exists(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    @patch(make_absolute(MODULES_IMPORT_PATH, "update_inventory.AnsibleModule"))
+    @patch(
+        make_absolute(MODULES_IMPORT_PATH, "update_inventory.AnsibleModule")
+    )
     def test_setup_module_object(self, mock_ansible_module):
         """Test module object setup."""
         self.module.setup_module_object()
@@ -122,11 +125,18 @@ all:
         self.assertIn("logging_level", arg_spec)
 
         # Verify choices
-        self.assertEqual(arg_spec["yaml_lib_mode"]["choices"], ["ruamel", "pyyaml"])
-        self.assertEqual(arg_spec["state"]["choices"], ["merge", "overwrite", "absent"])
-        self.assertEqual(arg_spec["vars_state"]["choices"], ["merge", "overwrite"])
         self.assertEqual(
-            arg_spec["logging_level"]["choices"], ["NOTSET", "DEBUG", "INFO", "ERROR"]
+            arg_spec["yaml_lib_mode"]["choices"], ["ruamel", "pyyaml"]
+        )
+        self.assertEqual(
+            arg_spec["state"]["choices"], ["merge", "overwrite", "absent"]
+        )
+        self.assertEqual(
+            arg_spec["vars_state"]["choices"], ["merge", "overwrite"]
+        )
+        self.assertEqual(
+            arg_spec["logging_level"]["choices"],
+            ["NOTSET", "DEBUG", "INFO", "ERROR"],
         )
 
         # Verify defaults
@@ -137,14 +147,22 @@ all:
         self.assertEqual(arg_spec["inventory_repo_branch"]["default"], "main")
         self.assertEqual(arg_spec["logging_level"]["default"], "INFO")
 
-    @patch(make_absolute(MODULES_IMPORT_PATH, "update_inventory.GitInventoryUpdater"))
+    @patch(
+        make_absolute(
+            MODULES_IMPORT_PATH, "update_inventory.GitInventoryUpdater"
+        )
+    )
     def test_without_required_parameters(self, mock_updater_class):
         """Failure must occur when all parameters are missing"""
         with self.assertRaises(AnsibleFailJson):
             with set_module_args({}):
                 self.module.main()
 
-    @patch(make_absolute(MODULES_IMPORT_PATH, "update_inventory.GitInventoryUpdater"))
+    @patch(
+        make_absolute(
+            MODULES_IMPORT_PATH, "update_inventory.GitInventoryUpdater"
+        )
+    )
     def test_successful_inventory_update(self, mock_updater_class):
         """Test successful inventory update."""
 
@@ -175,15 +193,18 @@ all:
         with set_module_args(module_args):
             # Verify that exit_json was called with success
             # self.assertTrue(mock_module.exit_json.called)
-            with self.assertRaises(AnsibleExitJson) as result:
+            with self.assertRaises(AnsibleExitJson):
                 # Test would call main function here
                 self.module.main()
 
-    # @patch('ansible.module_utils.basic.AnsibleModule', side_effect=MockAnsibleModule)
-    # @patch(make_absolute(MODULES_IMPORT_PATH, "update_inventory.AnsibleModule"))
+    # @patch('ansible.module_utils.basic.AnsibleModule',
+    #   side_effect=MockAnsibleModule)
+    # @patch(make_absolute(MODULES_IMPORT_PATH,
+    #   "update_inventory.AnsibleModule"))
     @patch(
         make_absolute(
-            MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.GitInventoryUpdater"
+            MODULE_UTILS_IMPORT_PATH,
+            "git_inventory_updater.GitInventoryUpdater",
         )
     )
     def test_module_basic_add_group(self, mock_updater_class):
@@ -198,7 +219,9 @@ all:
             "inventory_file": self.inventory_file,
             "inventory_base_dir": self.inventory_base_dir,
             "global_groups_file": self.inventory_file,
-            "group_list": [{"group_name": "new_group", "group_vars": {"key": "value"}}],
+            "group_list": [
+                {"group_name": "new_group", "group_vars": {"key": "value"}}
+            ],
             "inventory_repo_url": None,
             "remove_repo_dir": False,
         }
@@ -216,6 +239,7 @@ all:
 class TestGitInventoryUpdater(ModuleTestCase):
     """Test cases for the GitInventoryUpdater class."""
 
+    # noinspection PyPep8Naming
     def setUp(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp(prefix="test_inventory_repo_")
@@ -257,7 +281,9 @@ class TestGitInventoryUpdater(ModuleTestCase):
                     "host1": {"ansible_host": "192.168.1.10"},
                     "host2": {"ansible_host": "192.168.1.11"},
                 },
-                "children": {"webservers": {"hosts": {"host1": {}, "host2": {}}}},
+                "children": {
+                    "webservers": {"hosts": {"host1": {}, "host2": {}}}
+                },
             }
         }
 
@@ -272,6 +298,7 @@ class TestGitInventoryUpdater(ModuleTestCase):
             remove_repo_dir=False,
         )
 
+    # noinspection PyPep8Naming
     def tearDown(self):
         """Clean up test fixtures."""
         if os.path.exists(self.test_dir):
@@ -283,7 +310,9 @@ class TestGitInventoryUpdater(ModuleTestCase):
         self.assertEqual(
             self.inventory_updater.inventory_base_dir, self.inventory_base_dir
         )
-        self.assertEqual(self.inventory_updater.inventory_file, self.inventory_file)
+        self.assertEqual(
+            self.inventory_updater.inventory_file, self.inventory_file
+        )
 
     def test_validate_git_repo_success(self):
         """Test successful git repository validation."""
@@ -313,7 +342,9 @@ class TestGitInventoryUpdater(ModuleTestCase):
         # Verify backup was created
         self.assertTrue(backup_file.endswith("~"))
 
-    @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
+    @patch(
+        make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git")
+    )
     def test_commit_changes(self, mock_git_class):
         """Test git commit functionality."""
         # Mock successful git commands
@@ -332,31 +363,37 @@ class TestGitInventoryUpdater(ModuleTestCase):
         # expected_calls = [
         #     call(['git', 'clone'], cwd=self.inventory_base_dir),
         #     call(['git', 'status'], cwd=self.inventory_base_dir),
-        #     call(['git', 'add', self.inventory_file], cwd=self.inventory_base_dir),
-        #     call(['git', 'commit', '-m', 'test'], cwd=self.inventory_base_dir),
+        #     call(['git', 'add', self.inventory_file],
+        #       cwd=self.inventory_base_dir),
+        #     call(['git', 'commit', '-m', 'test'],
+        #       cwd=self.inventory_base_dir),
         #     call(['git', 'push'], cwd=self.inventory_base_dir),
         # ]
         #
         # self.mock_module.run_command.assert_has_calls(expected_calls)
 
-        # # Verify git operations were called in correct order (no pull for acp)
+        # # Verify git operations were called in correct order
+        # # (no pull for acp)
         # mock_git_instance.status.assert_called_once()
         # # mock_git_instance.set_user_config.assert_called_once()
-        # mock_git_instance.pull.assert_not_called()  # Should not be called for acp
+        # # Should not be called for acp
+        # mock_git_instance.pull.assert_not_called()
         # mock_git_instance.add.assert_called_once()
         # mock_git_instance.commit.assert_called_once_with("test commit")
         # mock_git_instance.push.assert_called_once()
 
-    @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
+    @patch(
+        make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git")
+    )
     def test_validate_git_repo_failure(self, mock_git_class):
         def git_clone_exception():
             raise ValueError("fatal: No such remote")
 
         mock_git_class.return_value.clone.side_effect = git_clone_exception
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             """Test git repository validation failure."""
-            inventory_updater = GitInventoryUpdater(
+            GitInventoryUpdater(
                 self.mock_module,
                 inventory_file=self.inventory_file,
                 inventory_base_dir=self.inventory_base_dir,
@@ -364,7 +401,9 @@ class TestGitInventoryUpdater(ModuleTestCase):
                 backup=True,
             )
 
-    @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
+    @patch(
+        make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git")
+    )
     def test_add_host_update(self, mock_git_class):
         """Test adding a host to inventory."""
 
@@ -380,7 +419,9 @@ class TestGitInventoryUpdater(ModuleTestCase):
         self.assertEqual(result["message"], "Inventory updated successfully")
         self.assertTrue(result)
 
-    @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
+    @patch(
+        make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git")
+    )
     def test_remove_host_update(self, mock_git_class):
         """Test removing a host from inventory."""
         inventory_updater = GitInventoryUpdater(
@@ -392,14 +433,14 @@ class TestGitInventoryUpdater(ModuleTestCase):
 
         host_list = [{"host_name": "host1"}]
 
-        result = inventory_updater.update_inventory(
-            host_list=host_list
-        )
+        result = inventory_updater.update_inventory(host_list=host_list)
         print("result=%s" % result)
 
         self.assertTrue(result)
 
-    @patch(make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git"))
+    @patch(
+        make_absolute(MODULE_UTILS_IMPORT_PATH, "git_inventory_updater.Git")
+    )
     def test_update_host_vars(self, mock_git_class):
         """Test updating host variables."""
 
@@ -412,7 +453,11 @@ class TestGitInventoryUpdater(ModuleTestCase):
                         "infra_group": "automation-engineering",
                     }
                 },
-                "parent_groups": ["vmware_flavor_medium", "ntp_client", "ldap_client"],
+                "parent_groups": [
+                    "vmware_flavor_medium",
+                    "ntp_client",
+                    "ldap_client",
+                ],
             }
         ]
 
@@ -424,6 +469,7 @@ class TestGitInventoryUpdater(ModuleTestCase):
 class TestInventoryParser(ModuleTestCase):
     """Test cases for the InventoryParser class."""
 
+    # noinspection PyPep8Naming
     def setUp(self):
         """Set up test fixtures."""
         self.test_dir = tempfile.mkdtemp()
@@ -456,7 +502,9 @@ class TestInventoryParser(ModuleTestCase):
                 },
                 "children": {
                     "webservers": {"hosts": {"host1": {}, "host2": {}}},
-                    "databases": {"hosts": {"db1": {"ansible_host": "192.168.1.20"}}},
+                    "databases": {
+                        "hosts": {"db1": {"ansible_host": "192.168.1.20"}}
+                    },
                 },
             }
         }
@@ -465,6 +513,7 @@ class TestInventoryParser(ModuleTestCase):
         with open(self.inventory_file_path, "w") as f:
             yaml.dump(self.sample_inventory, f)
 
+    # noinspection PyPep8Naming
     def tearDown(self):
         """Clean up test fixtures."""
         if os.path.exists(self.test_dir):
@@ -472,12 +521,16 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_initialization(self):
         """Test InventoryParser initialization."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
         self.assertEqual(parser.inventory_file, self.inventory_file)
 
     def test_parse_inventory_success(self):
         """Test successful inventory parsing."""
-        result = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file).get_inventory_root()
+        result = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        ).get_inventory_root()
         print("result =>", pprint.pformat(result))
 
         self.assertIsInstance(result, dict)
@@ -489,7 +542,9 @@ class TestInventoryParser(ModuleTestCase):
         """Test inventory parsing with missing file."""
         non_existent_file = os.path.join(self.test_dir, "missing.yml")
         with self.assertRaises(InventoryParserException):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, non_existent_file)
+            InventoryParser(
+                self.mock_module, self.inventory_base_dir, non_existent_file
+            )
 
     def test_parse_inventory_invalid_yaml(self):
         """Test inventory parsing with invalid YAML."""
@@ -498,11 +553,15 @@ class TestInventoryParser(ModuleTestCase):
             f.write("invalid: yaml: content: [")
 
         with self.assertRaises(yaml.YAMLError):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, invalid_yaml_file)
+            InventoryParser(
+                self.mock_module, self.inventory_base_dir, invalid_yaml_file
+            )
 
     def test_validate_inventory_success(self):
         """Test successful inventory validation."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         result = parser.validate_inventory_yamllint(strict_mode=True)
         self.assertTrue(result)
@@ -516,11 +575,15 @@ class TestInventoryParser(ModuleTestCase):
             yaml.dump(invalid_inventory, f)
 
         with self.assertRaises(InventoryParserException):
-            parser = InventoryParser(self.mock_module, self.inventory_base_dir, invalid_file)
+            InventoryParser(
+                self.mock_module, self.inventory_base_dir, invalid_file
+            )
 
     def test_get_hosts(self):
         """Test getting all hosts from inventory."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -533,7 +596,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_groups(self):
         """Test getting all groups from inventory."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -545,7 +610,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_hosts_in_group(self):
         """Test getting hosts in a specific group."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -559,7 +626,9 @@ class TestInventoryParser(ModuleTestCase):
 
     def test_get_host_vars(self):
         """Test getting variables for a specific host."""
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))
@@ -581,7 +650,9 @@ class TestInventoryParser(ModuleTestCase):
         with open(self.inventory_file_path, "w") as f:
             yaml.dump(inventory_with_group_vars, f)
 
-        parser = InventoryParser(self.mock_module, self.inventory_base_dir, self.inventory_file)
+        parser = InventoryParser(
+            self.mock_module, self.inventory_base_dir, self.inventory_file
+        )
 
         inventory = parser.get_inventory()
         print("inventory =>", pprint.pformat(inventory))

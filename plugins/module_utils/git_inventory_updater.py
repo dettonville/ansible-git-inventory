@@ -6,8 +6,8 @@ __metaclass__ = type
 
 Module utility class that:
 
-1) utilizes InventoryParser class instance to add/update/remove groups and/or hosts
-   and respective vars for a specified YAML-based inventory.
+1) utilizes InventoryParser class instance to add/update/remove groups
+   and/or hosts and respective vars for a specified YAML-based inventory.
 2) if git repo is provided, will:
     - clone (to a temporary repo directory if not specified) and
     - commit and push the inventory changes to the specified inventory repo
@@ -15,39 +15,47 @@ Module utility class that:
 
 """
 
+import inspect
 import logging
 import shutil
 import tempfile
-import inspect
 from typing import Type, TypeVar
 
+# noinspection PyUnresolvedReferences,PyPackageRequirements
 from ansible.module_utils.common.text.converters import to_text
 
 # noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (
-    InventoryParser,
-)
-# noinspection PyUnresolvedReferences
-from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.errors import (  # noqa: E501
     MissingLibError,
 )
 
 # noinspection PyUnresolvedReferences
+from ansible_collections.dettonville.git_inventory.plugins.module_utils.inventory_parser import (  # noqa: E501
+    InventoryParser,
+)
+
+# noinspection PyUnresolvedReferences
 try:
-    from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import Git
+    from ansible_collections.dettonville.utils.plugins.module_utils.git_actions import (  # noqa: E501
+        Git,
+    )
 except ImportError as imp_exc:
+    Git = None
     GIT_ACTIONS_IMPORT_ERROR = imp_exc
 else:
     GIT_ACTIONS_IMPORT_ERROR = None
 
 # noinspection PyUnresolvedReferences
 try:
-    from ansible_collections.dettonville.utils.plugins.module_utils.utils import (
+    from ansible_collections.dettonville.utils.plugins.module_utils.utils import (  # noqa: E501
         PrettyLog,
-        get_collection_version,
         UtilsModuleException,
+        get_collection_version,
     )
 except ImportError as imp_exc:
+    PrettyLog = None
+    UtilsModuleException = None
+    get_collection_version = None
     UTILS_IMPORT_ERROR = imp_exc
 else:
     UTILS_IMPORT_ERROR = None
@@ -59,7 +67,8 @@ T = TypeVar("T")
 
 def class_init_wrapper(cls: Type[T], *args, **kwargs) -> T:
     """
-    A wrapper function that dynamically filters args and kwargs for a class constructor.
+    A wrapper function that dynamically filters args and kwargs for a class
+    constructor.
 
     Args:
         cls: The class to be instantiated.
@@ -125,14 +134,14 @@ def class_init_wrapper(cls: Type[T], *args, **kwargs) -> T:
     # Check for missing required parameters
     if missing_required:
         raise TypeError(
-            f"Missing required parameters for {cls.__name__}: {missing_required}"
+            f"Missing required parameters for {cls.__name__}: "
+            f"{missing_required}"
         )
 
     return cls(**valid_params)
 
 
 class GitInventoryUpdater:
-
     def __init__(
         self,
         module,
@@ -142,7 +151,6 @@ class GitInventoryUpdater:
         remove_repo_dir=True,
         **kwargs,
     ):
-
         self.module = module
         if hasattr(module, "_name"):
             # if '_name' in module:
@@ -168,22 +176,34 @@ class GitInventoryUpdater:
         if UTILS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.utils library is missing") from UTILS_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml",
+                "dettonville.utils.plugins.module_utils.utils "
+                "library is missing",
+            ) from UTILS_IMPORT_ERROR
 
         if GIT_ACTIONS_IMPORT_ERROR:
             # Needs: from ansible.module_utils.basic import
             # missing_required_lib
-            raise MissingLibError("ruamel.yaml", "dettonville.utils.plugins.module_utils.git_actions library is missing") from UTILS_IMPORT_ERROR
+            raise MissingLibError(
+                "ruamel.yaml",
+                "dettonville.utils.plugins.module_utils.git_actions "
+                "library is missing",
+            ) from UTILS_IMPORT_ERROR
 
         self.remove_repo_dir = remove_repo_dir
         self.test_mode = test_mode
 
         self.inventory_file = inventory_file
-        self.log.debug("%s inventory_file => %s", log_prefix, self.inventory_file)
+        self.log.debug(
+            "%s inventory_file => %s", log_prefix, self.inventory_file
+        )
 
         self.inventory_base_dir = kwargs.get("inventory_base_dir") or None
         if self.inventory_base_dir is None:
-            self.inventory_base_dir = tempfile.mkdtemp(prefix="update_inventory")
+            self.inventory_base_dir = tempfile.mkdtemp(
+                prefix="update_inventory"
+            )
             kwargs["inventory_base_dir"] = self.inventory_base_dir
 
         self.log.info(
@@ -196,7 +216,9 @@ class GitInventoryUpdater:
         self.git_comment_prefix = kwargs.get("git_comment_prefix", "")
         self.git_comment_body = kwargs.get("git_comment_body", "")
         self.git_user_name = kwargs.get("git_user_name", "ansible")
-        self.git_user_email = kwargs.get("git_user_email", "ansible@example.org")
+        self.git_user_email = kwargs.get(
+            "git_user_email", "ansible@example.org"
+        )
         self.git_user_config = {
             "name": self.git_user_name,
             "email": self.git_user_email,
@@ -209,7 +231,9 @@ class GitInventoryUpdater:
 
         if self.git_repo_config:
             self.log.debug(
-                "%s git_repo_config => %s", log_prefix, PrettyLog(self.git_repo_config)
+                "%s git_repo_config => %s",
+                log_prefix,
+                PrettyLog(self.git_repo_config),
             )
             self.load_git_repo(**kwargs)
 
@@ -218,13 +242,18 @@ class GitInventoryUpdater:
         # ref: https://stackoverflow.com/a/72085255/2791368
         # ref: https://stackoverflow.com/questions/71265557/can-i-use-inspect-signature-to-interpret-a-decorators-args-kwargs-as-the
         self.inventory_parser = class_init_wrapper(
-            InventoryParser, self.module, inventory_file=self.inventory_file, **kwargs
+            InventoryParser,
+            self.module,
+            inventory_file=self.inventory_file,
+            **kwargs,
         )
 
         self.log.debug("%s finished", log_prefix)
 
     def get_internal_collection_version(self):
-        log_prefix = "%s.get_internal_collection_version():" % self.__class__.__name__
+        log_prefix = (
+            "%s.get_internal_collection_version():" % self.__class__.__name__
+        )
         self.log.debug("%s module_name => %s", log_prefix, self.module_name)
 
         if "." in self.module_name:
@@ -241,8 +270,10 @@ class GitInventoryUpdater:
             collection_version = get_collection_version(
                 module_fqcn, no_version=None
             )
-            self.log.debug("%s collection_version=%s", log_prefix, collection_version)
-        except UtilsModuleException as e:
+            self.log.debug(
+                "%s collection_version=%s", log_prefix, collection_version
+            )
+        except UtilsModuleException:
             pass
 
         return collection_version
@@ -251,7 +282,9 @@ class GitInventoryUpdater:
         log_prefix = "%s.load_git_repo():" % self.__class__.__name__
 
         self.log.debug(
-            "%s git_repo_config => %s", log_prefix, PrettyLog(self.git_repo_config)
+            "%s git_repo_config => %s",
+            log_prefix,
+            PrettyLog(self.git_repo_config),
         )
 
         if "repo_dir" not in self.git_repo_config:
@@ -260,7 +293,8 @@ class GitInventoryUpdater:
         self.git_comment_prefix = kwargs.get("git_comment_prefix", None)
         self.git_comment_body = kwargs.get("git_comment_body", None)
 
-        # self.git_comment_module_stamp = "[%s]: updated inventory file %s" % (self.__class__.__name__)
+        # self.git_comment_module_stamp = "[%s]: updated inventory file %s" %
+        #   (self.__class__.__name__)
         self.git_comment_module_stamp = "%s" % self.module_name
         if self.collection_version:
             self.git_comment_module_stamp += "[%s]" % self.collection_version
@@ -273,14 +307,19 @@ class GitInventoryUpdater:
         self.log.debug(
             "%s git_comment_prefix => %s", log_prefix, self.git_comment_prefix
         )
-        self.log.debug("%s git_comment_body => %s", log_prefix, self.git_comment_body)
+        self.log.debug(
+            "%s git_comment_body => %s", log_prefix, self.git_comment_body
+        )
 
         self.git_commit_message = self.get_commit_message()
         self.log.debug(
             "%s git_commit_message => %s", log_prefix, self.git_commit_message
         )
 
-        if self.git_repo_config["user_name"] and self.git_repo_config["user_email"]:
+        if (
+            self.git_repo_config["user_name"]
+            and self.git_repo_config["user_email"]
+        ):
             self.git_user_config = {
                 "name": self.git_repo_config["user_name"],
                 "email": self.git_repo_config["user_email"],
@@ -296,7 +335,6 @@ class GitInventoryUpdater:
         return
 
     def get_commit_message(self):
-
         git_commit_message_default = "%s: updated inventory" % (
             self.git_comment_module_stamp
         )
@@ -331,14 +369,18 @@ class GitInventoryUpdater:
         # if host_list is None:
         #     host_list = []
 
-        self.log.debug("%s module.check_mode => %s", log_prefix, self.module.check_mode)
+        self.log.debug(
+            "%s module.check_mode => %s", log_prefix, self.module.check_mode
+        )
 
         if self.module.check_mode:
             result["message"] = "The inventory has been updated successfully"
             return result
 
         if group_list:
-            self.log.debug("%s group_list => %s", log_prefix, PrettyLog(group_list))
+            self.log.debug(
+                "%s group_list => %s", log_prefix, PrettyLog(group_list)
+            )
             for group in group_list:
                 if self.state in ["merge", "overwrite"]:
                     self.inventory_parser.update_group(group)
@@ -346,7 +388,9 @@ class GitInventoryUpdater:
                     self.inventory_parser.remove_group(group)
 
         if host_list:
-            self.log.debug("%s host_list => %s", log_prefix, PrettyLog(host_list))
+            self.log.debug(
+                "%s host_list => %s", log_prefix, PrettyLog(host_list)
+            )
             for host in host_list:
                 if self.state in ["merge", "overwrite"]:
                     self.inventory_parser.update_host(host)
@@ -370,7 +414,6 @@ class GitInventoryUpdater:
         return result
 
     def update_git_repo(self):
-
         log_prefix = "%s.update_git_repo():" % self.__class__.__name__
         result = dict(changed=False)
 
@@ -394,7 +437,9 @@ class GitInventoryUpdater:
             result["message"] = "Inventory updated successfully"
             result["changed"] = True
         else:
-            result['message'] = "No changes required for {0}".format(self.inventory_file)
+            result['message'] = "No changes required for {0}".format(
+                self.inventory_file
+            )
             # result["message"] = "No changes required for inventory"
             result["changed"] = False
 
@@ -409,7 +454,8 @@ class GitInventoryUpdater:
                 )
             except Exception as e:
                 self.module.fail_json(
-                    msg="Exception occurred when attempting to remove temp inventory repo dir at %s"
+                    msg="Exception occurred when attempting to remove "
+                    "temporary inventory repository directory at %s"
                     % self.inventory_base_dir,
                     details="Error occurred while removing : %s" % to_text(e),
                 )

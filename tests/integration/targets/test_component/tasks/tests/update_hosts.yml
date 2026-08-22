@@ -22,7 +22,7 @@
       use_vars_files: "{{ __test_data.use_vars_files | d(omit) }}"
       create_empty_hostvars_files: "{{ __test_data.create_empty_hostvars_files | d(omit) }}"
       always_add_host_to_root_hosts: "{{ __test_data.always_add_host_to_root_hosts | d(omit) }}"
-      enforce_global_groups_must_already_exist: "{{ 
+      enforce_global_groups_must_already_exist: "{{
         __test_data.enforce_global_groups_must_already_exist | d(False) }}"
       state: "{{ __test_data.state | d(omit) }}"
       vars_state: "{{ __test_data.vars_state | d(omit) }}"
