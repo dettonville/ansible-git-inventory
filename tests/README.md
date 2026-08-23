@@ -130,7 +130,7 @@ Run command: docker run --volume /sys/fs/cgroup:/sys/fs/cgroup:ro --privileged=f
 
 
 PLAY RECAP *********************************************************************
-testhost                   : ok=101  changed=19   unreachable=0    failed=0    skipped=9    rescued=0    ignored=4   
+testhost                   : ok=101  changed=19   unreachable=0    failed=0    skipped=9    rescued=0    ignored=4
 
 Run command: docker exec -i ansible-test-controller-Nl1njsLi sh -c 'tar cf - -C /root/ansible_collections/dettonville/git_inventory/tests --exclude .tmp output | gzip'
 Run command: tar oxzf - -C /Users/ljohnson/repos/ansible/ansible_collections/dettonville/git_inventory/tests

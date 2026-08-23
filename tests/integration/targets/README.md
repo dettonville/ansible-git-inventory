@@ -7,7 +7,7 @@
 
 ## Check test inventory
 
-### Check correct hosts appear in the test groups 
+### Check correct hosts appear in the test groups
 
 ```shell
 ansible-inventory -i _test_inventory/ --graph --yaml testgroup_app123_platforms
@@ -16,7 +16,7 @@ ansible-inventory -i _test_inventory/ --graph --yaml dcc_app123_platform_lnx_man
 ansible-inventory -i _test_inventory/ --graph --yaml dmz
 ```
 
-### Check the host variable values are correctly set  
+### Check the host variable values are correctly set
 
 Variable value/state query based on group:
 
@@ -55,7 +55,7 @@ $ ansible -e @../integration_config.vault.yml --vault-password-file ${PROJECT_DI
 ```
 
 
-Query with vault and vars files variables (e.g., `./test-vars.yml`) 
+Query with vault and vars files variables (e.g., `./test-vars.yml`)
 
 ```shell
 $ PROJECT_DIR="$( git rev-parse --show-toplevel )"
@@ -93,8 +93,15 @@ winansd3s4.example.int | SUCCESS => {
 
 ```
 
-
 ### Run module tests
+
+Directly using integration test playbook:
+```shell
+$ run-playbook.sh -i localhost, -c local test_export_dicts.yml
+## or simply:
+$ run-playbook.sh test_export_dicts.yml
+$ run-playbook.sh test_debug_sanitized_playbook.yml
+```
 
 ```shell
 $ PROJECT_DIR="$( git rev-parse --show-toplevel )"
@@ -152,16 +159,16 @@ $ run-module-tests.sh -v -t update_inventory --extra-vars \'{\"test_case_id_list
 
 The pytest wrapper method uses the ['pytest-shell'](https://pytest-shell-utilities.readthedocs.io/en/latest/index.html#usage) plugin to launch the `run-module-tests.sh` script.
 
-Using the pytest wrapper has the benefit of generating the test results in a junit format for pipeline utilization. 
+Using the pytest wrapper has the benefit of generating the test results in a junit format for pipeline utilization.
 
 ```shell
-## To list all the module test cases: 
+## To list all the module test cases:
 $ run-pytest.sh -l
 
-## To run all the module test cases for the `update_inventory` plugin: 
+## To run all the module test cases for the `update_inventory` plugin:
 $ run-pytest.sh update_inventory
 
-## To run the module test for the `update_inventory` plugin and for only test case 'host01' 
+## To run the module test for the `update_inventory` plugin and for only test case 'host01'
 $ run-pytest.sh update_inventory-host01
 
 ```
@@ -179,7 +186,7 @@ $ reset-test-data.sh
 $ cd ${HOME}/.ansible/tmp/
 
 ## find last 10 update_hosts module execs sorted order
-## use gfind if using MacOS brew installed gnu utils 
+## use gfind if using MacOS brew installed gnu utils
 $ find . -maxdepth 2 -name "*.py" -type f -printf "\n%TY-%Tm-%Td %AT %p" |sort -nk1 -nk2 | grep update_hosts | tail -10
 ```
 
@@ -205,7 +212,7 @@ $ export ANSIBLE_PIPELINING=false
 $ export PYTHONDONTWRITEBYTECODE=1
 $ ./AnsiballZ_update_groups.py execute | jq
 ## if wanting to capture the log for reference
-$ ./AnsiballZ_update_hosts.py execute 2>&1 | tee test-case.log 
+$ ./AnsiballZ_update_hosts.py execute 2>&1 | tee test-case.log
 ```
 
 Define function to perform regular/repetitive debug tasks
@@ -227,7 +234,7 @@ Then use as follows:
 $ ls -Fla ../$(ls -Fla ../ | tail -2 | head -1 | cut -d':' -f2 | cut -d' ' -f2)
 $ cd $(ls -Fla ../ | tail -2 | head -1 | cut -d':' -f2 | cut -d' ' -f2)
 $ export ANSIBLE_DEBUG=1
-## perform debug_dir steps 
+## perform debug_dir steps
 $ cat debug_dir/args.json | jq '.ANSIBLE_MODULE_ARGS += { "remove_repo_dir": false, "test_mode": true }' > debug_dir/args
 $ explode_ansible_test
 ```
