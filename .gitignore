@@ -61,6 +61,7 @@ coverage.xml
 /test/cache/*
 
 # test stuff
+.ansible/
 ansible_collections/
 /test/integration/cloud-config-*.*
 !/test/integration/cloud-config-*.*.template

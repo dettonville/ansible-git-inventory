@@ -1,5 +1,3 @@
-.jenkins/runModuleTest.groovy shebang!skip
-deploy-ansible-collection.sh shellcheck:SC2034
 plugins/module_utils/yaml_parser.py future-import-boilerplate!skip
 plugins/modules/update_groups.py validate-modules:missing-gplv3-license
 plugins/modules/update_groups.py validate-modules:no-log-needed
@@ -7,7 +5,3 @@ plugins/modules/update_hosts.py validate-modules:missing-gplv3-license
 plugins/modules/update_hosts.py validate-modules:no-log-needed
 plugins/modules/update_inventory.py validate-modules:missing-gplv3-license
 plugins/modules/update_inventory.py validate-modules:no-log-needed
-regenerate-module-docs.sh shellcheck:SC2016
-regenerate-module-docs.sh shellcheck:SC2034
-tests/integration/targets/run-pytest.sh shellcheck:SC2034
-tests/run_tests.sh shellcheck:SC2034

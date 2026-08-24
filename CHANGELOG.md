@@ -1,10 +1,10 @@
 
-# Ansible Utils Collection Release Notes
+# Ansible Git Inventory Collection Release Notes
 
-
-## v1.0.0
+## v2026.7.1
 
 ### New Plugins
 
-- Add export_dicts module
-- Added sort_dict_list filter
+- Added update_groups module
+- Added update_hosts module
+- Added update_inventory module

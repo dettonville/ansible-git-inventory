@@ -58,7 +58,7 @@
       when: not item.is_raw|d(False)|bool
       ansible.builtin.copy:
         content: "{{ item.content | to_nice_yaml(indent=2) }}"
-        dest: "{{ __test_component__test_base_path }}/{{ __test_data.inventory_dir 
+        dest: "{{ __test_component__test_base_path }}/{{ __test_data.inventory_dir
           | d(__test_component__results_rundir) }}/{{ item.file_path }}"
 #        dest: "{{ __test_component__test_base_path }}/{{ __test_component__results_rundir }}/{{ item.file_path }}"
         mode: "0644"
@@ -68,7 +68,7 @@
       when: item.is_raw|d(False)|bool
       ansible.builtin.copy:
         content: "{{ item.content }}"
-        dest: "{{ __test_component__test_base_path }}/{{ __test_data.inventory_dir 
+        dest: "{{ __test_component__test_base_path }}/{{ __test_data.inventory_dir
           | d(__test_component__results_rundir) }}/{{ item.file_path }}"
 #        dest: "{{ __test_component__test_base_path }}/{{ __test_component__results_rundir }}/{{ item.file_path }}"
         mode: "0644"

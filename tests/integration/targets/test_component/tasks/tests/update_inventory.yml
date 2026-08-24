@@ -27,9 +27,9 @@
       create_parent_groupvar_files: "{{ __test_data.create_parent_groupvar_files | d(omit) }}"
       always_add_child_group_to_root: "{{ __test_data.always_add_child_group_to_root | d(omit) }}"
       always_add_host_to_root_hosts: "{{ __test_data.always_add_host_to_root_hosts | d(omit) }}"
-      enable_groupvar_symlinks_for_child_inventories: "{{ 
+      enable_groupvar_symlinks_for_child_inventories: "{{
         __test_data.enable_groupvar_symlinks_for_child_inventories | d(omit) }}"
-      enforce_global_groups_must_already_exist: "{{ 
+      enforce_global_groups_must_already_exist: "{{
         __test_data.enforce_global_groups_must_already_exist | d(False) }}"
       state: "{{ __test_data.state | d(omit) }}"
       vars_state: "{{ __test_data.vars_state | d(omit) }}"
