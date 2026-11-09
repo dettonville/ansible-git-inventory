@@ -163,7 +163,7 @@ Put simply, one can implement the **dettonville.git_inventory.update_inventory**
 
 ## Using This Collection
 
-A comprehensive set of [tested use cases/examples can be found here.](https://github.com/dettonville/ansible-test-automation/blob/main/tests/dettonville/git_inventory/main/README.md#testuse-case-example-index).
+A comprehensive set of [tested use cases/examples can be found here.](https://github.com/dettonville/ansible-test-automation/blob/main/tests/dettonville/git_inventory/main/README.md#testuse-case-example-index)
 
 ### Detailed Test / Use Case Examples
 

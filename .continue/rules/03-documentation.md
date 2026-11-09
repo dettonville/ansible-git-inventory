@@ -1,5 +1,5 @@
 ---
-name: Documentation Standards
+name: Ansible Plugin Documentation Standards (dettonville.git_inventory)
 globs: ["**/*.md", "README.md", "docs/**/*"]
 alwaysApply: true
 description: Documentation style guide

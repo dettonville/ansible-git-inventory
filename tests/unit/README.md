@@ -4,10 +4,32 @@
 ## Running the tests directly
 
 ```shell
+ansible-test units --requirements --python 3.13
 ansible-test units --python 3.13 update_inventory
+ansible-test units --python 3.13 tests/unit/plugins/modules/test_update_inventory.py
 ansible-test units --docker -v --python 3.13 update_inventory
 ansible-test units --docker -v --python 3.13 update_hosts
 ```
+
+### To run individual test
+
+```shell
+$ ansible-test units --python 3.13 -v plugins/modules/test_ollama_api.py::test_ollama_pull_model
+```
+
+### Create test coverage results
+```shell
+ansible-test units --python 3.13 ollama_api --coverage --verbose
+```
+
+Generate a new coverage report
+```shell
+ansible-test coverage report
+ansible-test coverage html
+open tests/output/reports/coverage/index.html
+```
+
+Check if the coverage for ollama_api.py improves (e.g., closer to 90–95%). If missed lines remain, review the HTML report to identify them.
 
 ```shell
 ## ref: https://github.com/ansible/ansible/issues/27446#issuecomment-318777441
@@ -56,7 +78,6 @@ log_file_format = %(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(linen
 log_file_date_format=%Y-%m-%d %H:%M:%S
 
 ```
-
 
 ```shell
 ansible-test units --docker -v --python 3.13

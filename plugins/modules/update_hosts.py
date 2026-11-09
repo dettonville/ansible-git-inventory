@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
@@ -478,7 +477,7 @@ module_args = dict(
     inventory_repo_url=dict(default=None),
     inventory_repo_branch=dict(default="main"),
     inventory_base_dir=dict(required=False, type="path"),
-    inventory_root_yaml_key=dict(type="str", default="all"),
+    inventory_root_yaml_key=dict(type="str", default="all", no_log=False),
     global_groups_file=dict(type="path", default="xenv_groups.yml"),
     logging_level=dict(
         type="str",

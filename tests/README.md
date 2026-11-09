@@ -14,10 +14,30 @@ export ANSIBLE_DEBUG=1
 
 ```shell
 ansible-test sanity --python 3.13  ## runs all sanity tests
+ansible-test sanity --python 3.13 ollama_api  ## runs ollama_api sanity tests
 ansible-test sanity --python 3.13 --test pep8
 ansible-test sanity --python ${TEST_PYTHON_VERSION} --test pylint
 ansible-test sanity --python ${TEST_PYTHON_VERSION} --test validate-modules
 ansible-test sanity -v --docker --python ${TEST_PYTHON_VERSION} export_dicts
+```
+
+To run using pytest directly:
+```shell
+pytest tests/unit/plugins/modules/test_ollama_api.py
+## run with verbosity
+pytest tests/unit/plugins/modules/test_ollama_api.py -v
+```
+
+To view live debug output in pytest, pass the -s flag (disable stdout capturing) and --log-cli-level=DEBUG:
+
+```shell
+pytest tests/unit/plugins/modules/test_ollama_api.py -s --log-cli-level=DEBUG
+```
+
+To run through Python directly with output capture disabled:
+
+```python
+python3 -m pytest tests/unit/plugins/modules/test_ollama_api.py -s
 ```
 
 * Note: MacOS Issues
@@ -38,10 +58,10 @@ $ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ### Run All Tests
 
 ```shell
-tests/run_tests.sh > run_test.results.txt
-tests/run_tests.sh sanity
-tests/run_tests.sh integration
-tests/run_tests.sh -L DEBUG sanity
+./run-tests.sh > run_test.results.txt
+./run-tests.sh sanity
+./run-tests.sh integration
+./run-tests.sh -L DEBUG sanity
 
 ```
 
@@ -94,8 +114,9 @@ ansible-test sanity --python 3.13 --test pylint
 
 ```shell
 ansible-test sanity -vv --python 3.13 --test pep8
-ansible-test sanity --python 3.13 --python-interpreter ~/.pyenv/versions/3.13.3/bin/python3.13 --local --venv-system-site-packages
+ansible-test sanity --python 3.13 --python-interpreter ~/.pyenv/versions/3.13.5/bin/python3.13 --local --venv-system-site-packages
 ansible-test sanity -v --docker --python ${TEST_PYTHON_VERSION} export_dicts
+ansible-test sanity --python 3.13 x509_certificate_verify | tee -a ansible-test-sanity-results.log
 ansible-test sanity -v --color --coverage --junit --docker default --python ${TEST_PYTHON_VERSION}
 ansible-test sanity -v --color --coverage --junit --docker default --python ${TEST_PYTHON_VERSION} export_dicts
 ```

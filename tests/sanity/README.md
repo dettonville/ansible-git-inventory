@@ -14,6 +14,7 @@ export ANSIBLE_DEBUG=1
 
 ```shell
 ansible-test sanity --python 3.13  ## runs all sanity tests
+ansible-test sanity --python 3.13 export_dicts
 ansible-test sanity --python 3.13 --test pep8
 ansible-test sanity --python ${TEST_PYTHON_VERSION} --test pylint
 ansible-test sanity --python ${TEST_PYTHON_VERSION} --test validate-modules
@@ -52,6 +53,7 @@ To run automated resolve of unused imports/variables issues using autoflake (htt
 pip install autoflake
 autoflake plugins/
 autoflake -r --in-place --remove-unused-variables plugins/
+autoflake -r --in-place --remove-all-unused-imports tests/
 autoflake -r --in-place --remove-unused-variables --remove-all-unused-imports plugins/
 ansible-test sanity --python 3.13 --test pylint
 ```
@@ -71,4 +73,10 @@ ansible-test sanity --python 3.13 --python-interpreter ~/.pyenv/versions/3.13.3/
 ansible-test sanity -v --docker --python ${TEST_PYTHON_VERSION} export_dicts
 ansible-test sanity -v --color --coverage --junit --docker default --python ${TEST_PYTHON_VERSION}
 ansible-test sanity -v --color --coverage --junit --docker default --python ${TEST_PYTHON_VERSION} export_dicts
+```
+
+To fix `no-smart-quotes` related issues
+```shell
+pip install fix-smartquotes
+fix-smartquotes docs/pull-requests/request-for-update.20250924.md
 ```

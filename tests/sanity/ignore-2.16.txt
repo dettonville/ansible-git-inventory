@@ -1,7 +1,3 @@
-plugins/module_utils/yaml_parser.py future-import-boilerplate!skip
 plugins/modules/update_groups.py validate-modules:missing-gplv3-license
-plugins/modules/update_groups.py validate-modules:no-log-needed
 plugins/modules/update_hosts.py validate-modules:missing-gplv3-license
-plugins/modules/update_hosts.py validate-modules:no-log-needed
 plugins/modules/update_inventory.py validate-modules:missing-gplv3-license
-plugins/modules/update_inventory.py validate-modules:no-log-needed

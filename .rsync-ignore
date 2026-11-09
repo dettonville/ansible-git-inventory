@@ -4,7 +4,7 @@ archive/***
 save/***
 .ansible/
 vault.yml
-#*vault.yml
+*vault.yml
 secrets.yml
 *secrets.yml
 .vault_pass

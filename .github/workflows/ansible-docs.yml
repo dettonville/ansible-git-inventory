@@ -48,6 +48,7 @@ jobs:
     with:
       collection-name: ${{ inputs.collection_name }}
       ansible-ref: stable-2.20
+      python: "3.13"
       squash-hierarchy: true
       init-lenient: false
       init-fail-on-error: true
@@ -65,6 +66,7 @@ jobs:
   publish-docs:
     name: Publish Ansible Docs
     needs: [build-docs]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
